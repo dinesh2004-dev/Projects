@@ -1,14 +1,23 @@
 package com.farmSystem.Servlets;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import org.json.JSONObject;
+
+import com.farmSystem.Service.LenderService;
+import com.farmSystem.Service.UserService;
+import com.farmSystem.Service.Impl.LenderServiceImpl;
+import com.farmSystem.Service.Impl.UserServiceImpl;
+import com.farmSystem.dao.EquipmentDAO;
+import com.farmSystem.entity.User;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
-
-import org.json.JSONObject;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class AddEquipment
@@ -35,6 +44,8 @@ public class AddEquipment extends HttpServlet {
 		
 		response.setCharacterEncoding("UTF-8");
 		
+		PrintWriter out = response.getWriter();
+		
 		try {
 			
 			String name = request.getParameter("name").trim();
@@ -52,24 +63,41 @@ public class AddEquipment extends HttpServlet {
 			String availability = request.getParameter("availability").trim();
 			
 			if(name == null ||  category == null || location == null || description == null || condition == null 
-					|| rentalRate == null || availability == null) {
+					|| rentalRate == null|| availability == null) {
 				
 				sendErrorResponse(response, "Missing Requried Fields");
 
 				return;
 			}
 			
-			JSONObject jsonResponse = new JSONObject();
-
-			jsonResponse.put("status", "sucess");
-
-			jsonResponse.put("message", "Equipmet Added Sucefully");
-
-			PrintWriter out = response.getWriter();
-
-			out.print(jsonResponse.toString());
-
-			out.flush();
+			EquipmentDAO equipmentDAO = new EquipmentDAO(name,category,location,description,condition,Double.parseDouble(rentalRate),availability);
+			
+			HttpSession httpSession = request.getSession(false);
+			
+			int userId = (int) httpSession.getAttribute("userId");
+			
+			UserService userService = new UserServiceImpl();
+			
+			User user = userService.findUser(userId);
+			
+			if(user.getRole().toString().equals("Lender")) {
+				
+				LenderService lenderService = new LenderServiceImpl();
+				
+				lenderService.addEquipment(userId, equipmentDAO);
+				
+				
+				
+				out.println("{\"status\":sucess,\"message\":Equipment Added}");
+				
+			}
+			else {
+				
+				out.println("{\"status\":error,\"message\":User is not Lender}");
+				
+			}
+			
+			
 		}
 		catch(Exception e){
 			

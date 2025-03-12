@@ -29,6 +29,28 @@ public class EquipmentDAO {
 
 	private Availability availability;
 
+	private String location;
+	
+	public EquipmentDAO() {
+		
+	}
+	
+	public EquipmentDAO(String name,String category,String location,String description,String condition,double rentalRate,String availability) {
+		this.name = name;
+		
+		this.category = Category.valueOf(category);
+		
+		this.location = location;
+		
+		this.description = description;
+		
+		this.condition = Condition.valueOf(condition);
+		
+		this.rentalRate = rentalRate;
+		
+		this.availability = Availability.valueOf(availability);
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -90,6 +112,14 @@ public class EquipmentDAO {
 		this.availability = availability;
 	}
 	
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
+	}
+
 	@Override
 	public String toString() {
 		return "EquipmentDAO [Id=" + Id + ", name=" + name + ", owner=" + owner + ", category=" + category

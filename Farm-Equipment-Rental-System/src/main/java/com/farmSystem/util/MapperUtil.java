@@ -34,6 +34,8 @@ public class MapperUtil {
 		
 		equipment.setDescription(equipmentDAO.getDescription());
 		
+		equipment.setLocation(equipmentDAO.getLocation());
+		
 		equipment.setName(equipmentDAO.getName());
 		
 		equipment.setRentalRate(equipmentDAO.getRentalRate());
