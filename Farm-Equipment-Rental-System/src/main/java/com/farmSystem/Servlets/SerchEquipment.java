@@ -2,14 +2,17 @@ package com.farmSystem.Servlets;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.json.JSONObject;
 
 import com.farmSystem.Service.EquipmentService;
 import com.farmSystem.Service.Impl.EquipmentServiceImpl;
+import com.farmSystem.TypeAdapter.LocalDateTimeAdapter;
 import com.farmSystem.entity.Equipment;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -36,7 +39,7 @@ public class SerchEquipment extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
 
@@ -54,18 +57,25 @@ public class SerchEquipment extends HttpServlet {
 			String minRate = request.getParameter("minRate");
 
 			String maxRate = request.getParameter("maxRate");
+			
+			Double minRate1 = (minRate != null && !minRate.isEmpty()) ? Double.parseDouble(minRate) : null;
+            Double maxRate1 = (maxRate != null && !maxRate.isEmpty()) ? Double.parseDouble(maxRate) : null;
 
-			if (category == null && location == null || minRate == null && maxRate == null) {
-
-				sendErrorResponse(response, "Requried parameter missing");
-			}
+//			if (category == null && location == null || minRate == null && maxRate == null) {
+//
+//				sendErrorResponse(response, "Requried parameter missing");
+//			}
 
 			EquipmentService equipmentService = new EquipmentServiceImpl();
 
-			List<Equipment> equipments = equipmentService.searchEquipment(category, location,
-					Double.parseDouble(minRate), Double.parseDouble(minRate));
+			List<Equipment> equipments = equipmentService.searchEquipment(category, location,minRate1,maxRate1);
+			
+			
+			
 
-			Gson gson = new Gson();
+			Gson gson = new GsonBuilder()
+				    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+				    .create();
 
 			String jsonEquipment = gson.toJson(equipments);
 

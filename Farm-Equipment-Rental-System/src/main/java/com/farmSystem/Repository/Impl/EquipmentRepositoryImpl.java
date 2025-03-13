@@ -21,6 +21,8 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
 	@Override
 	public List<Equipment> serchEquipment(String category,String location,Double minRate,Double maxRate){
 		
+		
+		
 		try(Session session = sessionFactory.openSession()){
 			
 			HibernateCriteriaBuilder hibernateCriteriaBuilder = session.getCriteriaBuilder();
@@ -48,6 +50,7 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
 			}
 			
 			criteriaQuery.select(root).where(predicate);
+			
 			
 			return session.createSelectionQuery(criteriaQuery).getResultList();
 		}
