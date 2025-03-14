@@ -12,9 +12,9 @@ public class EquipmentServiceImpl implements EquipmentService {
 	EquipmentRepository equipmentRepository = new EquipmentRepositoryImpl();
 	
 	@Override
-	public List<Equipment> searchEquipment(String category,String location,Double minRate,Double maxRate){
+	public List<Equipment> searchEquipment(String category,String location,Double minRate,Double maxRate,String sortField,String sortOrder,int pageNumber,int pageSize){
 		
-		return equipmentRepository.serchEquipment(category,location,minRate,maxRate);
+		return equipmentRepository.serchEquipment(category,location,minRate,maxRate,sortField,sortOrder,pageNumber,pageSize);
 	}
 
 }

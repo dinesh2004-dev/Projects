@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.SelectionQuery;
 import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 
 import com.farmSystem.Config.DataBaseConfig;
@@ -18,10 +19,10 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
 	
 	private SessionFactory sessionFactory = DataBaseConfig.getSessionFactory();
 	
+	
+	
 	@Override
-	public List<Equipment> serchEquipment(String category,String location,Double minRate,Double maxRate){
-		
-		
+	public List<Equipment> serchEquipment(String category,String location,Double minRate,Double maxRate,String sortField,String sortOrder,int pageNumber,int pageSize){
 		
 		try(Session session = sessionFactory.openSession()){
 			
@@ -32,6 +33,8 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
 			Root<Equipment> root = criteriaQuery.from(Equipment.class);
 			
 			Predicate predicate = hibernateCriteriaBuilder.conjunction();
+			
+			
 			
 			if(category != null && !category.isEmpty()) {
 				
@@ -49,10 +52,29 @@ public class EquipmentRepositoryImpl implements EquipmentRepository{
 				predicate = hibernateCriteriaBuilder.and(predicate,hibernateCriteriaBuilder.lessThanOrEqualTo(root.get("rentalRate"), maxRate));
 			}
 			
+			
 			criteriaQuery.select(root).where(predicate);
 			
+			// 🔹 Apply Sorting
+            if (sortField != null && !sortField.isEmpty()) {
+                if ("DESC".equalsIgnoreCase(sortOrder)) {
+                    criteriaQuery.orderBy(hibernateCriteriaBuilder.desc(root.get(sortField)));
+                } else {
+                    criteriaQuery.orderBy(hibernateCriteriaBuilder.asc(root.get(sortField)));
+                }
+            }
 			
-			return session.createSelectionQuery(criteriaQuery).getResultList();
+			
+			
+			SelectionQuery<Equipment> selectionQuery = session.createSelectionQuery(criteriaQuery);
+			
+			
+			selectionQuery.setFirstResult((pageNumber - 1) * pageSize);  // Calculate starting index
+            selectionQuery.setMaxResults(pageSize);  // Set max records per page
+			List<Equipment> result = selectionQuery.getResultList();
+			
+            return result;
+					
 		}
 	}
 	

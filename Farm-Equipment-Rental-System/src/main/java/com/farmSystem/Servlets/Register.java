@@ -1,7 +1,6 @@
 package com.farmSystem.Servlets;
 
 import java.io.IOException;
-
 import java.io.PrintWriter;
 
 import org.json.JSONObject;
@@ -14,6 +13,9 @@ import com.farmSystem.Service.Impl.LenderServiceImpl;
 import com.farmSystem.Service.Impl.RenterServiceImpl;
 import com.farmSystem.dao.UserDAO;
 import com.farmSystem.enums.Role;
+import com.farmSystem.geolocation.FindIP;
+import com.farmSystem.geolocation.GeolocationService;
+import com.farmSystem.geolocation.ReverseGeocodingService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -46,6 +48,8 @@ public class Register extends HttpServlet {
 
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
+		
+		PrintWriter out = response.getWriter();
 
 		try {
 
@@ -59,17 +63,28 @@ public class Register extends HttpServlet {
 
 			String role = request.getParameter("role").trim();
 
-			String address = request.getParameter("address").trim();
+			
 
 			if (fullName == null || password == null || emailId == null || mobileNo == null || role == null
-					|| address == null) {
+					) {
 
 				sendErrorResponse(response, "Missing Requried Fields");
 
 				return;
 			}
+			
+			String ipAddress = FindIP.getClientIp(request);
+			
+			double[] latLng = GeolocationService.getLocationFromIP(ipAddress);
+			
+			if (latLng == null || latLng.length == 0) {
+	            out.print("{\"status\":\"error\",\"message\":\"Unable to fetch location\"}");
+	            return;
+	        }
+			
+			String address = ReverseGeocodingService.getAddressFromCoordinates(latLng[0],latLng[1]);
 
-			UserDAO userDAO = new UserDAO(fullName, password, emailId, mobileNo, Role.valueOf(role), address);
+			UserDAO userDAO = new UserDAO(fullName, password, emailId, mobileNo, Role.valueOf(role), address,latLng[0],latLng[1]);
 
 			if (role.equals("Admin")) {
 
@@ -91,8 +106,6 @@ public class Register extends HttpServlet {
 			jsonResponse.put("status", "sucess");
 
 			jsonResponse.put("message", "user registered sucessfully");
-
-			PrintWriter out = response.getWriter();
 
 			out.print(jsonResponse.toString());
 

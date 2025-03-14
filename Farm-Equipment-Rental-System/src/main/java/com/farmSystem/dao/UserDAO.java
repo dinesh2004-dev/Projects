@@ -25,6 +25,10 @@ public class UserDAO{
 	
 	private Role role;
 	
+	private double lattitude;
+	
+	private double longitute;
+	
 	private String address;
 	
 	private LocalDateTime createdAt;
@@ -33,7 +37,7 @@ public class UserDAO{
 		
 	}
 	
-	public UserDAO(String fullName,String password,String emailId,String phoneNumber,Role role,String address) {
+	public UserDAO(String fullName,String password,String emailId,String phoneNumber,Role role,String address,double lattitude,double longitute) {
 		this.fullName = fullName;
 		
 		this.password = password;
@@ -45,6 +49,27 @@ public class UserDAO{
 		this.role = role;
 		
 		this.address = address;
+		
+		this.lattitude = lattitude;
+		
+		this.longitute = longitute;
+	}
+	
+
+	public double getLattitude() {
+		return lattitude;
+	}
+
+	public void setLattitude(double lattitude) {
+		this.lattitude = lattitude;
+	}
+
+	public double getLongitute() {
+		return longitute;
+	}
+
+	public void setLongitute(double longitute) {
+		this.longitute = longitute;
 	}
 
 	public int getId() {

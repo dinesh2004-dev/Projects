@@ -17,7 +17,8 @@ public class MapperUtil {
 		user.setFullName(userDAO.getFullName());
 		user.setEmailId(userDAO.getEmailId());
 		user.setAddress(userDAO.getAddress());
-		
+		user.setLatitude(userDAO.getLattitude());
+		user.setLongitude(userDAO.getLongitute());
 		return user;
 		
 	}

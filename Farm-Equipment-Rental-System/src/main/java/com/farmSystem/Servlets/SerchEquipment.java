@@ -58,24 +58,31 @@ public class SerchEquipment extends HttpServlet {
 
 			String maxRate = request.getParameter("maxRate");
 			
-			Double minRate1 = (minRate != null && !minRate.isEmpty()) ? Double.parseDouble(minRate) : null;
-            Double maxRate1 = (maxRate != null && !maxRate.isEmpty()) ? Double.parseDouble(maxRate) : null;
+			String sortField = request.getParameter("sortField");
+			
+			String sortOrder = request.getParameter("sortOrder");
+			
+			String pageNumber = request.getParameter("pageNumber").trim();
 
-//			if (category == null && location == null || minRate == null && maxRate == null) {
-//
-//				sendErrorResponse(response, "Requried parameter missing");
-//			}
+			String pageSize = request.getParameter("pageSize").trim();
+
+			Double minRate1 = (minRate != null && !minRate.isEmpty()) ? Double.parseDouble(minRate) : null;
+			Double maxRate1 = (maxRate != null && !maxRate.isEmpty()) ? Double.parseDouble(maxRate) : null;
+
+			if (pageSize == null || pageNumber == null || pageSize.isEmpty() || pageNumber.isEmpty()) {
+
+				sendErrorResponse(response, "Requried parameter missing");
+			}
+			int pageNumber1 = Integer.parseInt(pageNumber);
+
+			int pageSize1 = Integer.parseInt(pageSize);
 
 			EquipmentService equipmentService = new EquipmentServiceImpl();
 
-			List<Equipment> equipments = equipmentService.searchEquipment(category, location,minRate1,maxRate1);
-			
-			
-			
+			List<Equipment> equipments = equipmentService.searchEquipment(category, location, minRate1, maxRate1,
+					sortField,sortOrder,pageNumber1, pageSize1);
 
-			Gson gson = new GsonBuilder()
-				    .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-				    .create();
+			Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 
 			String jsonEquipment = gson.toJson(equipments);
 

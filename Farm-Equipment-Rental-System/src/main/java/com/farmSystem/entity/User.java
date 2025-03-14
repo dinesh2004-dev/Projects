@@ -27,6 +27,11 @@ public class User extends Base{
 	@Column(name = "mobile",nullable = false,length = 10,unique = true)
 	private String phoneNumber;
 	
+	@Column(nullable = false)
+	private double latitude;
+	@Column(nullable = false)
+	private double longitude;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "role",nullable = false)
 	private Role role;
@@ -37,6 +42,22 @@ public class User extends Base{
 	private LocalDateTime createdAt;
 
 	
+
+	public double getLatitude() {
+		return latitude;
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+
+	public double getLongitude() {
+		return longitude;
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
 
 	public String getFullName() {
 		return fullName;
