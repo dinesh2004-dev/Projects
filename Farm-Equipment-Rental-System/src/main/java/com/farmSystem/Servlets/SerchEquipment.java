@@ -78,6 +78,8 @@ public class SerchEquipment extends HttpServlet {
 			int pageSize1 = Integer.parseInt(pageSize);
 
 			EquipmentService equipmentService = new EquipmentServiceImpl();
+			
+			
 
 			List<Equipment> equipments = equipmentService.searchEquipment(category, location, minRate1, maxRate1,
 					sortField,sortOrder,pageNumber1, pageSize1);

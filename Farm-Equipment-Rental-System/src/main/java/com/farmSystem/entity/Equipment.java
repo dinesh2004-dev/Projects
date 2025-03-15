@@ -2,10 +2,10 @@ package com.farmSystem.entity;
 
 import java.time.LocalDateTime;
 
-
 import com.farmSystem.enums.Availability;
 import com.farmSystem.enums.Category;
 import com.farmSystem.enums.Condition;
+import com.google.gson.annotations.Expose;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,38 +18,48 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "Equipment")
-public class Equipment extends Base {
 
+public class Equipment extends Base {
+	@Expose
 	@Column(nullable = false)
 	private String name;
 
-	@ManyToOne
+	@ManyToOne(  fetch = FetchType.LAZY)
+//	@ManyToOne
 	@JoinColumn(name = "owner_id",referencedColumnName= "id", nullable = false)
-	private User owner;
-
+	private transient User owner;
+	
+	@Expose
 	@Enumerated(EnumType.STRING)
 
 	@Column(nullable = false)
 	
 	private Category category;
 	
+	@Expose
 	@Column(nullable = false)
 	private String location;
-
+	
+	@Expose
 	@Column(nullable = false)
 	private String description;
+	
+	@Expose
 	@Enumerated(EnumType.STRING)
 
 	@Column(name = "`condition`",nullable = false)
 	private Condition condition;
+	@Expose
 
 	@Column(name = "rental_rate", nullable = false, precision = 2)
 	private double rentalRate;
+	@Expose
 	@Enumerated(EnumType.STRING)
 
 	@Column(nullable = false)
 
 	private Availability availability;
+	@Expose
 	@Column(insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createDate;
 	
