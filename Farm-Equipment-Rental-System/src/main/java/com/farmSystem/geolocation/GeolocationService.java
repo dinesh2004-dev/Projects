@@ -10,7 +10,7 @@ import com.google.gson.JsonParser;
 
 public class GeolocationService {
 	
-	private static final String GOOGLE_API_KEY = "AIzaSyCcfrXvFSYVJ8nBzEJ52hm558OS8fA8jqk";
+	private static final String GOOGLE_API_KEY = "Replace with API Key";
 	
 	public static double[] getLocationFromIP(String ipAddress) {
 		try {
