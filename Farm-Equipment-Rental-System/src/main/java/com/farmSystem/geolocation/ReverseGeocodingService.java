@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class ReverseGeocodingService {
 
-	private static final String GOOGLE_API_KEY = "AIzaSyCcfrXvFSYVJ8nBzEJ52hm558OS8fA8jqk";
+	private static final String GOOGLE_API_KEY = "Replace With API key";
 
 	public static String getAddressFromCoordinates(double latitude, double longitude) {
 
