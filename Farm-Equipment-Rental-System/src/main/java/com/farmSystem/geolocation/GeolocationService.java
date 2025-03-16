@@ -5,12 +5,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+import com.farmSystem.Config.ConfigLoader;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.protobuf.Api;
 
 public class GeolocationService {
 	
-	private static final String GOOGLE_API_KEY = "Replace with API Key";
+//	private static final String GOOGLE_API_KEY = "Replace with API Key";
+	
+	private static final String GOOGLE_API_KEY = ConfigLoader.getProperty("api.key");
 	
 	public static double[] getLocationFromIP(String ipAddress) {
 		try {

@@ -8,9 +8,11 @@ import java.net.http.HttpResponse;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.farmSystem.Config.ConfigLoader;
+
 public class ReverseGeocodingService {
 
-	private static final String GOOGLE_API_KEY = "Replace With API key";
+	private static final String GOOGLE_API_KEY = ConfigLoader.getProperty("api.key");
 
 	public static String getAddressFromCoordinates(double latitude, double longitude) {
 
