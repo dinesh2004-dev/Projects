@@ -2,6 +2,8 @@ package com.farmSystem.entity;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Formula;
+
 import com.farmSystem.enums.Availability;
 import com.farmSystem.enums.Category;
 import com.farmSystem.enums.Condition;
@@ -28,6 +30,14 @@ public class Equipment extends Base {
 //	@ManyToOne
 	@JoinColumn(name = "owner_id",referencedColumnName= "id", nullable = false)
 	private transient User owner;
+//	private  User owner;
+	
+	@Formula("(SELECT u.latitude FROM user_table u WHERE u.id = owner_id)")
+    private Double ownerLatitude;
+    
+    @Formula("(SELECT u.longitude FROM user_table u WHERE u.id = owner_id)")
+    private Double ownerLongitude;
+	
 	
 	@Expose
 	@Enumerated(EnumType.STRING)
@@ -117,6 +127,18 @@ public class Equipment extends Base {
 	}
 	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
+	}
+	public Double getOwnerLatitude() {
+		return ownerLatitude;
+	}
+	public void setOwnerLatitude(Double ownerLatitude) {
+		this.ownerLatitude = ownerLatitude;
+	}
+	public Double getOwnerLongitude() {
+		return ownerLongitude;
+	}
+	public void setOwnerLongitude(Double ownerLongitude) {
+		this.ownerLongitude = ownerLongitude;
 	}
 
 }

@@ -11,6 +11,7 @@ import com.farmSystem.Service.EquipmentService;
 import com.farmSystem.Service.Impl.EquipmentServiceImpl;
 import com.farmSystem.TypeAdapter.LocalDateTimeAdapter;
 import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -19,6 +20,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class SerchEquipment
@@ -42,6 +44,8 @@ public class SerchEquipment extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		
+		System.out.println("hi 1");
 
 		response.setContentType("application/json");
 
@@ -62,6 +66,8 @@ public class SerchEquipment extends HttpServlet {
 			
 			String sortOrder = request.getParameter("sortOrder");
 			
+			Double radius = Double.parseDouble(request.getParameter("radius"));
+			
 			String pageNumber = request.getParameter("pageNumber").trim();
 
 			String pageSize = request.getParameter("pageSize").trim();
@@ -79,10 +85,20 @@ public class SerchEquipment extends HttpServlet {
 
 			EquipmentService equipmentService = new EquipmentServiceImpl();
 			
+			System.out.println("hi 2");
+			
+			HttpSession httpSession = request.getSession(false);
+			
+			User user = (User) httpSession.getAttribute("user");
+			
+			System.out.println("hi 3");
+			
 			
 
 			List<Equipment> equipments = equipmentService.searchEquipment(category, location, minRate1, maxRate1,
-					sortField,sortOrder,pageNumber1, pageSize1);
+					sortField,sortOrder,pageNumber1, pageSize1,user.getLongitude(),user.getLatitude(),radius);
+			System.out.println("hi 4");
+		
 
 			Gson gson = new GsonBuilder().registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter()).create();
 

@@ -31,6 +31,10 @@ public class EquipmentDAO {
 
 	private String location;
 	
+	private double ownerLatitude;
+	
+	private double ownerLongitude;
+	
 	public EquipmentDAO() {
 		
 	}
@@ -73,6 +77,22 @@ public class EquipmentDAO {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public double getOwnerLatitude() {
+		return ownerLatitude;
+	}
+
+	public void setOwnerLatitude(double ownerLatitude) {
+		this.ownerLatitude = ownerLatitude;
+	}
+
+	public double getOwnerLongitude() {
+		return ownerLongitude;
+	}
+
+	public void setOwnerLongitude(double ownerLongitude) {
+		this.ownerLongitude = ownerLongitude;
 	}
 
 	public String getDescription() {

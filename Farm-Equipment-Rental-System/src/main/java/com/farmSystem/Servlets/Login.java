@@ -68,6 +68,8 @@ public class Login extends HttpServlet {
 				
 				httpSession.setAttribute("userId", userId);
 				
+				httpSession.setAttribute("user", user);
+				
 				httpSession.setAttribute("emailId", emailId);
 				
 				JSONObject jsonResponse = new JSONObject();
