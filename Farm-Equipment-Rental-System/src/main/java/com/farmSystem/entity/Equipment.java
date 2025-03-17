@@ -22,54 +22,56 @@ import jakarta.persistence.Table;
 @Table(name = "Equipment")
 
 public class Equipment extends Base {
-	@Expose
+	
 	@Column(nullable = false)
 	private String name;
-
+	
+	
 	@ManyToOne(  fetch = FetchType.LAZY)
 //	@ManyToOne
 	@JoinColumn(name = "owner_id",referencedColumnName= "id", nullable = false)
-	private transient User owner;
-//	private  User owner;
+//	private transient User owner;
+
+	private  User owner;
 	
-	@Formula("(SELECT u.latitude FROM user_table u WHERE u.id = owner_id)")
-    private Double ownerLatitude;
-    
-    @Formula("(SELECT u.longitude FROM user_table u WHERE u.id = owner_id)")
-    private Double ownerLongitude;
+//	@Expose
+//	@Formula("(SELECT u.latitude FROM user_table u WHERE u.id = owner_id)")
+//    private Double ownerLatitude;
+//	@Expose
+//    @Formula("(SELECT u.longitude FROM user_table u WHERE u.id = owner_id)")
+//    private Double ownerLongitude;
+//	
 	
 	
-	@Expose
 	@Enumerated(EnumType.STRING)
 
 	@Column(nullable = false)
 	
 	private Category category;
 	
-	@Expose
 	@Column(nullable = false)
 	private String location;
 	
-	@Expose
+	
 	@Column(nullable = false)
 	private String description;
 	
-	@Expose
+	
 	@Enumerated(EnumType.STRING)
 
 	@Column(name = "`condition`",nullable = false)
 	private Condition condition;
-	@Expose
+	
 
 	@Column(name = "rental_rate", nullable = false, precision = 2)
 	private double rentalRate;
-	@Expose
+	
 	@Enumerated(EnumType.STRING)
 
 	@Column(nullable = false)
 
 	private Availability availability;
-	@Expose
+	
 	@Column(insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createDate;
 	
@@ -128,17 +130,17 @@ public class Equipment extends Base {
 	public void setCreateDate(LocalDateTime createDate) {
 		this.createDate = createDate;
 	}
-	public Double getOwnerLatitude() {
-		return ownerLatitude;
-	}
-	public void setOwnerLatitude(Double ownerLatitude) {
-		this.ownerLatitude = ownerLatitude;
-	}
-	public Double getOwnerLongitude() {
-		return ownerLongitude;
-	}
-	public void setOwnerLongitude(Double ownerLongitude) {
-		this.ownerLongitude = ownerLongitude;
-	}
+//	public Double getOwnerLatitude() {
+//		return ownerLatitude;
+//	}
+//	public void setOwnerLatitude(Double ownerLatitude) {
+//		this.ownerLatitude = ownerLatitude;
+//	}
+//	public Double getOwnerLongitude() {
+//		return ownerLongitude;
+//	}
+//	public void setOwnerLongitude(Double ownerLongitude) {
+//		this.ownerLongitude = ownerLongitude;
+//	}
 
 }

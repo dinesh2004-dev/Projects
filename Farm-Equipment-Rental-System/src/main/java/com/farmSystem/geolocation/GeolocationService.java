@@ -12,7 +12,7 @@ import com.google.protobuf.Api;
 
 public class GeolocationService {
 	
-//	private static final String GOOGLE_API_KEY = "Replace with API Key";
+//	private static final String GOOGLE_API_KEY = "";
 	
 	private static final String GOOGLE_API_KEY = ConfigLoader.getProperty("api.key");
 	
@@ -34,6 +34,8 @@ public class GeolocationService {
 					.build();
 //			send request and get response
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+			
+			System.out.println("API Response: " + response.body());
 			
 //			parse JSON Response
 			

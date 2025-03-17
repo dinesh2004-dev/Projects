@@ -1,8 +1,6 @@
 package com.farmSystem.dao;
 
-import java.time.LocalDateTime;
-
-
+import com.farmSystem.entity.Equipment;
 import com.farmSystem.entity.User;
 import com.farmSystem.enums.Availability;
 import com.farmSystem.enums.Category;
@@ -53,6 +51,32 @@ public class EquipmentDAO {
 		this.rentalRate = rentalRate;
 		
 		this.availability = Availability.valueOf(availability);
+	}
+	
+	public EquipmentDAO(Equipment equipment) {
+		
+		this.Id = equipment.getId();
+		
+		this.name = equipment.getName();
+		
+		this.category = equipment.getCategory();
+		
+		this.location = equipment.getLocation();
+		
+		this.description = equipment.getDescription();
+		
+		this.condition = equipment.getCondition();
+		
+		this.rentalRate = equipment.getRentalRate();
+		
+		this.availability = equipment.getAvailability();
+		
+		if(equipment.getOwner() != null) {
+			this.ownerLatitude = equipment.getOwner().getLatitude();
+			
+			this.ownerLongitude = equipment.getOwner().getLongitude();
+		}
+		
 	}
 
 	public String getName() {

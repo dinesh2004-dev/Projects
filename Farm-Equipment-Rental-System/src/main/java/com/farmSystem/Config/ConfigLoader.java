@@ -1,23 +1,23 @@
 package com.farmSystem.Config;
 
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
-    private static Properties properties;
-    
+	private static final Properties properties = new Properties();
+
     static {
-        try {
-            properties = new Properties();
-            FileInputStream input = new FileInputStream("config.properties");
+        try (InputStream input = ConfigLoader.class.getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                throw new RuntimeException("Failed to load configuration: config.properties file not found in resources folder.");
+            }
             properties.load(input);
-            input.close();
         } catch (IOException e) {
-            System.err.println("Failed to load configuration: " + e.getMessage());
+            throw new RuntimeException("Error loading configuration: " + e.getMessage(), e);
         }
     }
-    
+
     public static String getProperty(String key) {
         return properties.getProperty(key);
     }

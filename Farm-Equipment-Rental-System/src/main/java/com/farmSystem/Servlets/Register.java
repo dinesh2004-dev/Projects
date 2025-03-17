@@ -75,6 +75,8 @@ public class Register extends HttpServlet {
 			
 			String ipAddress = FindIP.getClientIp(request);
 			
+			System.out.println(ipAddress);
+			
 			double[] latLng = GeolocationService.getLocationFromIP(ipAddress);
 			
 			if (latLng == null || latLng.length == 0) {

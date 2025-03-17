@@ -10,7 +10,7 @@ import org.json.JSONObject;
 import com.farmSystem.Service.EquipmentService;
 import com.farmSystem.Service.Impl.EquipmentServiceImpl;
 import com.farmSystem.TypeAdapter.LocalDateTimeAdapter;
-import com.farmSystem.entity.Equipment;
+import com.farmSystem.dao.EquipmentDAO;
 import com.farmSystem.entity.User;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -66,7 +66,7 @@ public class SerchEquipment extends HttpServlet {
 			
 			String sortOrder = request.getParameter("sortOrder");
 			
-			Double radius = Double.parseDouble(request.getParameter("radius"));
+			String radius = request.getParameter("radius");
 			
 			String pageNumber = request.getParameter("pageNumber").trim();
 
@@ -74,6 +74,8 @@ public class SerchEquipment extends HttpServlet {
 
 			Double minRate1 = (minRate != null && !minRate.isEmpty()) ? Double.parseDouble(minRate) : null;
 			Double maxRate1 = (maxRate != null && !maxRate.isEmpty()) ? Double.parseDouble(maxRate) : null;
+			
+			Double radius1 = (radius != null && !radius.isEmpty()) ? Double.parseDouble(radius) : null;
 
 			if (pageSize == null || pageNumber == null || pageSize.isEmpty() || pageNumber.isEmpty()) {
 
@@ -95,8 +97,8 @@ public class SerchEquipment extends HttpServlet {
 			
 			
 
-			List<Equipment> equipments = equipmentService.searchEquipment(category, location, minRate1, maxRate1,
-					sortField,sortOrder,pageNumber1, pageSize1,user.getLongitude(),user.getLatitude(),radius);
+			List<EquipmentDAO> equipments = equipmentService.searchEquipment(category, location, minRate1, maxRate1,
+					sortField,sortOrder,pageNumber1, pageSize1,user.getLongitude(),user.getLatitude(),radius1);
 			System.out.println("hi 4");
 		
 
