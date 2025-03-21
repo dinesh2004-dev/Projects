@@ -2,8 +2,8 @@
 The Farm Equipment Rental System is a web-based platform designed to connect farmers who own agricultural equipment with those who need to rent it. The system simplifies the rental process by allowing equipment owners to list their machinery and renters to find and book the required equipment easily.
 
 ## Current Progress
--✅ User Role Management – Separate roles for equipment owners and renters
--✅ Equipment Listings – Owners can add equipment with details and pricing
+- ✅ User Role Management – Separate roles for equipment owners and renters
+- ✅ Equipment Listings – Owners can add equipment with details and pricing
 -🔄 Backend Development – Currently using Java Servlets & JSP, planned transition to Spring Boot
 -🔄 API Testing – Being tested using Postman
 -🔄 Razorpay Payment Integration – Planned for secure transactions
