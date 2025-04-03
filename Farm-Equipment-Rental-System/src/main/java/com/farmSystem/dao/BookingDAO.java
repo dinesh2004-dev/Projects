@@ -30,6 +30,28 @@ public class BookingDAO {
 	
 	
 	private LocalDateTime createdAt;
+	
+	public BookingDAO() {
+		
+	}
+	public BookingDAO(Equipment equipment,User renter,LocalDateTime start_date,LocalDateTime end_date,
+			BookingStatus bookingStatus,PaymentStatus paymentStatus,double totalCost) {
+		
+		this.equipment = equipment;
+		
+		this.renter = renter;
+		
+		this.start_date = start_date;
+		
+		this.end_date = end_date;
+		
+		this.bookingStatus = bookingStatus;
+		
+		this.paymentStatus = paymentStatus;
+		
+		this.totalCost = totalCost;
+		
+	}
 
 
 	public Equipment getEquipment() {

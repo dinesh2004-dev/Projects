@@ -6,6 +6,7 @@ import com.farmSystem.Repository.EquipmentRepository;
 import com.farmSystem.Repository.Impl.EquipmentRepositoryImpl;
 import com.farmSystem.Service.EquipmentService;
 import com.farmSystem.dao.EquipmentDAO;
+import com.farmSystem.entity.Equipment;
 
 public class EquipmentServiceImpl implements EquipmentService {
 	
@@ -18,6 +19,11 @@ public class EquipmentServiceImpl implements EquipmentService {
 		return equipmentRepository
 				.serchEquipment(category,location,minRate,maxRate,sortField,sortOrder,pageNumber,pageSize,
 						userLng,userLat,radius);
+	}
+	
+	public Equipment findEquipment(int id) {
+		
+		return equipmentRepository.findEquipment(id);
 	}
 
 }

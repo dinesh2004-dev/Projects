@@ -2,6 +2,8 @@ package com.farmSystem.entity;
 
 import java.time.LocalDateTime;
 
+
+
 import com.farmSystem.enums.BookingStatus;
 import com.farmSystem.enums.PaymentStatus;
 
@@ -12,6 +14,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 
 @Entity
 @Table(name = "Bookings")
@@ -24,10 +28,12 @@ public class Bookings extends Base {
 	@ManyToOne
 	@JoinColumn(name = "renter_id", nullable = false)
 	private User renter;
-
+	
+	
 	@Column(nullable = false)
 	private LocalDateTime start_date;
-
+	
+	
 	@Column(nullable = false)
 	private LocalDateTime end_date;
 
@@ -45,6 +51,10 @@ public class Bookings extends Base {
 	 @Column(insertable = false, updatable = false, 
 	            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createdAt;
+	 
+	 public Bookings() {
+		 
+	 }
 	 
 	 public Bookings(Equipment equipment,User renter,LocalDateTime start_date,LocalDateTime end_date,
 			 BookingStatus bookingStatus,PaymentStatus paymentStatus,double totalCost) {

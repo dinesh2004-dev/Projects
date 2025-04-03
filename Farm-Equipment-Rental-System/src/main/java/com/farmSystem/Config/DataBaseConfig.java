@@ -1,11 +1,11 @@
 package com.farmSystem.Config;
 
 import org.hibernate.SessionFactory;
-
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 
+import com.farmSystem.entity.Bookings;
 import com.farmSystem.entity.Equipment;
 import com.farmSystem.entity.User;
 
@@ -21,7 +21,8 @@ public class DataBaseConfig {
 		
 		Configuration configuration = new Configuration()
 				.addAnnotatedClass(User.class)
-				.addAnnotatedClass(Equipment.class);
+				.addAnnotatedClass(Equipment.class)
+				.addAnnotatedClass(Bookings.class);
 				
 		
 		ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()

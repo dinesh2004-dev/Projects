@@ -1,7 +1,9 @@
 package com.farmSystem.util;
 
+import com.farmSystem.dao.BookingDAO;
 import com.farmSystem.dao.EquipmentDAO;
 import com.farmSystem.dao.UserDAO;
+import com.farmSystem.entity.Bookings;
 import com.farmSystem.entity.Equipment;
 import com.farmSystem.entity.User;
 
@@ -42,6 +44,28 @@ public class MapperUtil {
 		equipment.setRentalRate(equipmentDAO.getRentalRate());
 		
 		return equipment;
+	}
+	
+	public static Bookings convertBookingsDaoToBookingEntity(BookingDAO bookingDAO) {
+		
+		Bookings bookings = new Bookings();
+		
+		bookings.setRenter(bookingDAO.getRenter());
+		
+		bookings.setEquipment(bookingDAO.getEquipment());
+		
+		bookings.setBookingStatus(bookingDAO.getBookingStatus());
+		
+		bookings.setPaymentStatus(bookingDAO.getPaymentStatus());
+		
+		bookings.setStart_date(bookingDAO.getStart_date());
+		
+		bookings.setEnd_date(bookingDAO.getEnd_date());
+		
+		bookings.setTotalCost(bookingDAO.getTotalCost());
+		
+		return bookings;
+		
 	}
 
 }

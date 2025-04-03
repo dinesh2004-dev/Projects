@@ -98,5 +98,13 @@ public class EquipmentRepositoryImpl implements EquipmentRepository {
 
 		}
 	}
+	
+	public Equipment findEquipment(int id) {
+		
+		try(Session session = sessionFactory.openSession()){
+			
+			return session.get(Equipment.class,id);
+		}
+	}
 
 }

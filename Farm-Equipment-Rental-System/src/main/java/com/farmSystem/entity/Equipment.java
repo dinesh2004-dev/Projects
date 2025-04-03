@@ -1,4 +1,4 @@
-package com.farmSystem.entity;
+ package com.farmSystem.entity;
 
 import java.time.LocalDateTime;
 
@@ -137,7 +137,7 @@ public class Equipment extends Base {
 //		this.ownerLatitude = ownerLatitude;
 //	}
 //	public Double getOwnerLongitude() {
-//		return ownerLongitude;
+//		return ownerLongitude;   
 //	}
 //	public void setOwnerLongitude(Double ownerLongitude) {
 //		this.ownerLongitude = ownerLongitude;
