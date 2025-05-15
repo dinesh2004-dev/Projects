@@ -5,3 +5,4 @@ src/main/resources/config.properties
 src/main/resources/hibernate.properties
 Farm-Equipment-Rental-System/resources/
 
+/target/
