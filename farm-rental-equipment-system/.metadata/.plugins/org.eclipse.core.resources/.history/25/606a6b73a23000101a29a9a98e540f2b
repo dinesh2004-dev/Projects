@@ -1,0 +1,7 @@
+package com.farmSystem.service;
+
+import com.farmSystem.exception.BookingNotFoundException;
+
+public interface PaymentService {
+	String initiatePayment(int bookingId) throws BookingNotFoundException;
+}

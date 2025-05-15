@@ -1,0 +1,15 @@
+package com.farmSystem.service;
+
+import java.util.List;
+
+import com.farmSystem.DTO.EquipmentDTO;
+import com.farmSystem.DTO.SearchEquipmentDTO;
+import com.farmSystem.entity.Equipment;
+
+public interface EquipmentService {
+	
+	int saveEquipment(EquipmentDTO equipmentDTO) throws Exception;
+	
+	List<Equipment> searchEquipment(SearchEquipmentDTO searchEquipmentDTO);
+
+}

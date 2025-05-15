@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+    <typeInfo handle="=Farm-Rental-System/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.farmSystem.service{UserService.java[UserService" modifiers="513" timestamp="1746512246685"/>
+    <typeInfo handle="=Farm-Rental-System/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.farmSystem.service{EquipmentService.java[EquipmentService" modifiers="513" timestamp="1746926106897"/>
+    <typeInfo handle="=Farm-Rental-System/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.farmSystem.Repository{CustomEquipmentRepository.java[CustomEquipmentRepository" modifiers="513" timestamp="1746769937335"/>
+    <typeInfo handle="=Farm-Rental-System/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.farmSystem.service{BookingsService.java[BookingsService" modifiers="513" timestamp="1747285367506"/>
+    <typeInfo handle="=Farm-Rental-System/src\/main\/java=/optional=/true=/=/maven.pomderived=/true=/&lt;com.farmSystem.service{LenderService.java[LenderService" modifiers="513" timestamp="1747207587251"/>
+</typeInfoHistroy>

@@ -1,0 +1,97 @@
+package com.farmSystem.Repository.Impl;
+
+import java.util.List;
+
+import com.farmSystem.DTO.SearchEquipmentDTO;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
+public class CustomEquipmentRepository implements com.farmSystem.Repository.CustomEquipmentRepository {
+	
+	@PersistenceUnit
+	private EntityManagerFactory entityManagerFactory;
+
+	@Override
+	public List<User> serchEquipment(SearchEquipmentDTO searchEquipmentDTO) {
+		
+		try(EntityManager entityManager = entityManagerFactory.createEntityManager()){
+			
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			
+			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+			
+			Root<User> root =criteriaQuery.from(User.class);
+			
+			Join<User,Equipment> ownerJoin = root.join("owner",JoinType.INNER);
+			
+			Predicate predicate = criteriaBuilder.conjunction();
+			
+			if(category != null && !category.isEmpty()) {
+				
+				predicate = criteriaBuilder.and(predicate,criteriaBuilder
+																.equal(root.get("category"),category));
+			}
+			
+			if (location != null && !location.isEmpty()) {
+
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.like(root.get("location"), "%" + location + "%"));
+			}
+
+			if (radius != null) {
+
+				// Expression for distance calculation (in meters)
+				Expression<Double> distanceExpr = criteriaBuilder.function("ST_Distance_Sphere", Double.class,
+						criteriaBuilder.function("POINT", Object.class, ownerJoin.get("longitude"),
+								ownerJoin.get("latitude")),
+						criteriaBuilder.function("POINT", Object.class,
+								criteriaBuilder.literal(userLng), criteriaBuilder.literal(userLat)));
+
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.lessThanOrEqualTo(distanceExpr, radius * 1000));
+
+			}
+			if (minRate != null) {
+
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.greaterThanOrEqualTo(root.get("rentalRate"), minRate));
+			}
+			if (maxRate != null) {
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.lessThanOrEqualTo(root.get("rentalRate"), maxRate));
+			}
+
+			criteriaQuery.select(root).where(predicate);
+
+			// 🔹 Apply Sorting
+			if (sortField != null && !sortField.isEmpty()) {
+				if ("DESC".equalsIgnoreCase(sortOrder)) {
+					criteriaQuery.orderBy(criteriaBuilder.desc(root.get(sortField)));
+				} else {
+					criteriaQuery.orderBy(criteriaBuilder.asc(root.get(sortField)));
+				}
+			}
+			
+			
+			int skipSize = pageNumber * pageSize;
+			return entityManager.createQuery(criteriaQuery)
+					.setMaxResults(pageSize)
+					.setFirstResult(skipSize)
+					.getResultList();
+		}
+	
+	
+	}
+
+}

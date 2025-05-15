@@ -1,0 +1,13 @@
+package com.farmSystem.service;
+
+import com.farmSystem.DTO.BookingsRequestDTO;
+import com.farmSystem.exception.BookingNotFoundException;
+import com.farmSystem.exception.EquipmentNotFoundException;
+import com.farmSystem.exception.UserNotFoundException;
+
+public interface BookingsService {
+	
+	String  book(BookingsRequestDTO bookingsDTO) throws UserNotFoundException,EquipmentNotFoundException;
+	
+	String getBookingStatus(int id) throws BookingNotFoundException;
+}

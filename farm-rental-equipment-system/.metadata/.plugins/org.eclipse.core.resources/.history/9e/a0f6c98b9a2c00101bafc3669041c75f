@@ -1,0 +1,18 @@
+package com.farmSystem.Util;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+
+import com.farmSystem.DTO.EquipmentDTO;
+import com.farmSystem.entity.Equipment;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+public interface EquipmentMapper {
+	
+	@Mapping(ignore = true,target = "owner")
+	Equipment EquipmentEntityToEquipmentDTO(EquipmentDTO equipmentDTO);
+	
+	
+
+}

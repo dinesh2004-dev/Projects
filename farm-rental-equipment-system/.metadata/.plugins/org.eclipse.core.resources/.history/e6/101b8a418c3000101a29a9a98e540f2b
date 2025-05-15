@@ -1,0 +1,144 @@
+package com.farmSystem.service.impl;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import com.farmSystem.DTO.BookingsDTO;
+import com.farmSystem.DTO.BookingsRequestDTO;
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.Repository.EquipmentRepository;
+import com.farmSystem.Repository.UserRepository;
+import com.farmSystem.Util.BookingsMapper;
+import com.farmSystem.Util.UsersUtil;
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+import com.farmSystem.enums.Availability;
+import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.enums.PaymentStatus;
+import com.farmSystem.exception.BookingNotFoundException;
+import com.farmSystem.exception.EquipmentNotFoundException;
+import com.farmSystem.exception.LenderNotFoundException;
+import com.farmSystem.exception.RenterNotFoundException;
+import com.farmSystem.exception.UserNotFoundException;
+import com.farmSystem.service.BookingsService;
+
+import jakarta.transaction.Transactional;
+
+@Service
+public class BookingServiceImpl implements BookingsService {
+	
+	@Autowired
+	private BookingsRepository bookingsRepository;
+	
+	@Autowired
+	private EquipmentRepository equipmentRepository;
+	
+	@Autowired
+	private UsersUtil usersUtil;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	
+	@Autowired
+	private BookingsMapper bookingsMapper;
+	
+	
+	@Value("${equipment.not.found}")
+	private String equipmentNotFound;
+	
+	@Value("${user.not.found}")
+	private String userNotFound;
+	
+	@Value("${Booking.not.found}")
+	private String NoBookingFound;
+	
+	@Value("${Lender.not.found}")
+	private String lenderNotFound;
+	
+	@Transactional
+	@Override
+	public String  book(BookingsRequestDTO  bookingsRequestDTO) throws UserNotFoundException,EquipmentNotFoundException, RenterNotFoundException, LenderNotFoundException {
+		
+		String emailId = usersUtil.getCurrentUserEmail();
+		
+		User renter = userRepository.findByEmailId(emailId)
+									.orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id"+emailId));
+		
+		Equipment equipment = equipmentRepository.findById(bookingsRequestDTO.getEquipmentId())
+												 .orElseThrow(() -> new EquipmentNotFoundException(String.format(equipmentNotFound,bookingsRequestDTO.getEquipmentId())));
+		
+		User lender = userRepository.findById(equipment.getOwner().getId())
+									.orElseThrow(() -> new LenderNotFoundException(String.format(lenderNotFound,equipment.getOwner().getId())));
+		
+		boolean alreadyBooked = bookingsRepository.existsByRenterAndEquipment(renter,equipment);
+		
+		if(alreadyBooked) {
+			return "Equipment with id :"+equipment.getId()+" Already Booked its under pending";
+		}
+		
+		
+		if(equipment.getAvailability() == Availability.Booked || equipment.getAvailability() == Availability.Unavailable) {
+			
+			return (equipment.getAvailability() == Availability.Booked) ? "Booked By Other Customer" : "Equipment Is Not Available";
+		}
+		
+		
+		Bookings booking = new Bookings();
+		booking.setEquipment(equipment);
+		booking.setRenter(renter);
+		booking.setLender(lender);
+		booking.setStart_date(bookingsRequestDTO.getStartDate());
+		booking.setEnd_date(bookingsRequestDTO.getEndDate());
+		booking.setBookingStatus(BookingStatus.Pending);
+		booking.setPaymentStatus(PaymentStatus.PENDING);
+		
+		equipment.setAvailability(Availability.Booked);
+		bookingsRepository.save(booking);
+		
+		return String.format("Request Sent To Lender with id : %s",booking.getLender().getId());
+		
+		
+	}
+	
+	@Override
+	public String getBookingStatus(int id) throws BookingNotFoundException{
+		
+		 
+		String renterUsername = usersUtil.getCurrentUserEmail();
+		
+		Bookings booking = bookingsRepository.findById(id)
+											 .orElseThrow(() -> new BookingNotFoundException(String.format(renterUsername,id)));
+		
+		if (!booking.getRenter().getUsername().equals(renterUsername)) {
+	        return "Not authorized to view booking status";
+	    }
+		
+		return booking.getBookingStatus().toString();
+											  
+	}
+	
+	@Override
+	public List<BookingsDTO> getAllBookings() throws RenterNotFoundException, BookingNotFoundException{
+		
+		String renterUsername = usersUtil.getCurrentUserEmail();
+
+	    User renter = userRepository.findByEmailId(renterUsername)
+	    							.orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id"+renterUsername));
+	    
+	    List<Bookings> bookingsList = bookingsRepository.findAllByRenter(renter);
+	    
+	    if(bookingsList.isEmpty()) {
+	    	
+	    	throw new BookingNotFoundException("there are no bookings for renter with id : "+renter.getId());
+	    }
+	    
+	    return bookingsList.stream().map(bookings -> bookingsMapper.bookingsEntityToBookingsDTO(bookings)).collect(Collectors.toList());
+	}
+
+}

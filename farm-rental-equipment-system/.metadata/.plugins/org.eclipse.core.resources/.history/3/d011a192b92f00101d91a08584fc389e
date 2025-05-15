@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Razorpay Payment Gateway</title>
+	</head>
+	<body>
+		<h2>Make Payment</h2>
+		
+		<form id = "paymentform">
+			<label for = "amount">Enter Amount(INR):</label>
+			<input type ="number" id = "amount" name = "amount">
+			<button type = "button" onclick="initiatePayment()">Pay Now</button>
+		</form>
+		<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+		<script>
+			function initiatePayment(){
+				
+				const amount = document.getElementById("amount");
+				
+				fetch("/api/payment/create-order",{
+					method : "POST",
+					headers:{
+						"Content-Type" : "application/x-www-form-urlencoded"
+					},
+					body : `amount=${amount}`
+				})
+				.then(response => response.json())
+				.then(order => {
+						const options = {
+							         key: "rzp_test_thbnstH0Bq80hy", // Replace with your key
+							         amount: order.amount,
+							         currency: order.currency,
+							         name: "Test Payment",
+							         description: "Testing Razorpay Integration",
+							         order_id: order.id,
+									 "callback_url": "/payment-callback",
+									 "prefill": {
+									                  "name": "User Name",
+									                  "email": "user@example.com",
+												}
+									
+						};
+						const rzp1 = new Razorpay(options);
+						rzp1.open();
+				});
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,28 @@
+package com.farmSystem.service.impl;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.exception.BookingNotFoundException;
+import com.farmSystem.service.PaymentService;
+
+@Service
+public class PaymentServiceImpl implements PaymentService{
+	
+	@Autowired
+	private BookingsRepository bookingsRepository;
+	
+	private String bookingNotFound;
+
+	@Override
+	public String initiatePayment(int bookingId) {
+		
+		Optional<Bookings> bookings = bookingsRepository.findById(bookingId)
+														.orElseThrow(() -> new BookingNotFoundException(String.format(bookingNotFound,bookingId)));
+	}
+
+}

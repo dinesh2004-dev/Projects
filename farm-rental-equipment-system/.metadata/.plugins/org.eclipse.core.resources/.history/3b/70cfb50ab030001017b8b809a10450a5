@@ -1,0 +1,27 @@
+package com.farmSystem.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+
+public interface BookingsRepository extends JpaRepository<Bookings,Integer>{
+	
+	@Query("SELECT e from Bookings e where lender = :lender")
+	List<Bookings> findAllByLender(User lender);
+	
+	@Query("SELECT e from Bookings e where renter = :renter")
+	List<Bookings> findAllByRenter(User renter);
+	
+	boolean existsByRenterAndEquipment(User renter,Equipment equipment);
+	
+	@Query("SELECT b FROM Bookings b WHERE b.equipment = :equipment AND " +
+		       "((b.start_date <= :endDate AND b.end_date >= :startDate))")
+		List<Bookings> findOverlappingBookings(Equipment equipment, LocalDateTime localDateTime, LocalDateTime localDateTime2);
+
+}

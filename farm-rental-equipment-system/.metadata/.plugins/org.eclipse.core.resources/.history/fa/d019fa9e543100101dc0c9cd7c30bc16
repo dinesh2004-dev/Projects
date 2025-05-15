@@ -1,0 +1,108 @@
+package com.farmSystem.controller;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
+
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.exception.BookingNotFoundException;
+import com.farmSystem.service.BookingsService;
+import com.razorpay.Order;
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
+import com.razorpay.Utils;
+
+@RequestMapping("/api/payment")
+@RestController
+public class PaymentController {
+	
+	@Autowired
+	private BookingsService bookingService;
+	
+	@Autowired
+	private BookingsRepository bookingsRepository;
+	
+	@Value("${razorpay.api.key}")
+	private String key;
+	
+	@Value("${razorpay.key.secret}")
+	private  String secret;
+	
+	
+	@PostMapping("/create-order")
+	public ResponseEntity<Map<String, Object>> createOrder(@RequestParam("bookingId") int bookingId) throws RazorpayException {
+
+	    // ✅ 1. Fetch booking from DB
+	    Bookings booking = bookingsRepository.findById(bookingId)
+	            .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
+
+	    // ✅ 2. Get total price in INR and convert to paise
+	    BigDecimal totalPrice = booking.getTotalCost(); // assume it's in INR
+	    int amountInPaise = totalPrice.multiply(BigDecimal.valueOf(100)).intValueExact();
+
+	    // ✅ 3. Create Razorpay order
+	    RazorpayClient razorPayClient = new RazorpayClient(key, secret);
+
+	    JSONObject orderRequest = new JSONObject();
+	    orderRequest.put("amount", amountInPaise);
+	    orderRequest.put("currency", "INR");
+
+	    JSONObject notes = new JSONObject();
+	    notes.put("bookingId", String.valueOf(bookingId));
+	    orderRequest.put("notes", notes);
+
+	    Order order = razorPayClient.orders.create(orderRequest);
+
+	    // ✅ 4. Prepare response for frontend
+	    Map<String, Object> response = new HashMap<>();
+	    response.put("id", order.get("id"));
+	    response.put("amount", order.get("amount"));
+	    response.put("currency", order.get("currency"));
+
+	    return ResponseEntity.ok(response);
+	}
+	@PostMapping("/payment-callback")
+	public RedirectView paymentCallback(
+			@RequestParam("razorpay_order_id") String razorpayOrderId,
+			@RequestParam("razorpay_payment_id") String razorpayPaymentId,
+			@RequestParam("razorpay_signature") String razorpaySignature) throws RazorpayException, BookingNotFoundException{
+		
+		String signature = razorpayOrderId + "|" + razorpayPaymentId;
+		
+		
+		
+        boolean isValid = Utils.verifySignature(signature, razorpaySignature, secret);
+        
+        if(isValid) {
+        	
+        	RazorpayClient razorPayClient = new RazorpayClient(key, secret);
+            Order order = razorPayClient.orders.fetch(razorpayOrderId);
+            JSONObject notes = (JSONObject) order.get("notes");
+            String bookingIdStr = notes.getString("bookingId");
+
+            int bookingId = Integer.parseInt(bookingIdStr);
+            bookingService.confirmBookingAfterPayment(bookingId);
+            
+           
+        	
+        	RedirectView redirectView = new RedirectView("/success.html?orderId=" + razorpayOrderId);
+            return redirectView;
+        	
+        }
+        else {
+        	return new RedirectView("/failure.html");
+        }
+		
+	}
+}

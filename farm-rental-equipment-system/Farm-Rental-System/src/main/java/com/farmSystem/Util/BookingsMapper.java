@@ -1,0 +1,18 @@
+package com.farmSystem.Util;
+
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingConstants;
+
+import com.farmSystem.DTO.BookingsDTO;
+import com.farmSystem.entity.Bookings;
+
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = {EquipmentMapper.class, UserMapper.class})
+public interface BookingsMapper {
+
+    @Mapping(source = "equipment", target = "equipmentDTO")
+    @Mapping(source = "renter", target = "renterDTO")
+    @Mapping(source = "lender", target = "lenderDTO")
+    BookingsDTO bookingsEntityToBookingsDTO(Bookings bookings);
+    
+}

@@ -1,0 +1,15 @@
+package com.farmSystem.Repository;
+
+import java.util.List;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import com.farmSystem.entity.Bookings;
+
+public interface BookingsRepository extends JpaRepository<Bookings,Integer>{
+	
+	@Query("SELECT e from Bookings e where lender = :lender")
+	List<Bookings> findAllByLenderId(User Lender);
+
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Razorpay Payment Gateway</title>
+  </head>
+  <body>
+    <h2>Make Payment</h2>
+
+    <form id="paymentform">
+      <label for="amount">Amount (INR):</label>
+      <input type="number" id="amount" name="amount" readonly />
+
+      <input type="hidden" id="bookingId" name="bookingId" />
+      <button type="button" onclick="initiatePayment()">Pay Now</button>
+    </form>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <script>
+      let razorpayOrder = null;
+
+      const params = new URLSearchParams(window.location.search);
+      const bookingId = params.get("bookingId");
+
+      if (!bookingId) {
+        alert("Booking ID is missing in the URL!");
+      } else {
+        document.getElementById("bookingId").value = bookingId;
+
+        const token = localStorage.getItem("jwt_token");
+
+        // Call backend to create Razorpay order on page load
+        fetch(`http://localhost:8080/api/payment/create-order?bookingId=${bookingId}`, {
+          method: "POST",
+          headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/x-www-form-urlencoded"
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Failed to fetch Razorpay order");
+            }
+            return response.json();
+          })
+          .then(order => {
+            // Save order info for payment
+            razorpayOrder = order;
+            document.getElementById("amount").value = order.amount / 100;
+          })
+          .catch(error => {
+            console.error("Error fetching Razorpay order:", error);
+            alert("Failed to fetch payment information.");
+          });
+      }
+
+      function initiatePayment() {
+        if (!razorpayOrder) {
+          alert("Payment info not ready yet.");
+          return;
+        }
+
+        const options = {
+          key: "rzp_test_jZ1nAY5xoJtd66", // Replace with your actual key
+          amount: razorpayOrder.amount,
+          currency: razorpayOrder.currency,
+          name: "Test Payment",
+          description: "Booking Payment",
+          order_id: razorpayOrder.id,
+          callback_url: "http://localhost:8080/api/payment/payment-callback",
+          prefill: {
+            name: "User Name",
+            email: "user@example.com"
+          }
+        };
+
+        const rzp = new Razorpay(options);
+        rzp.open();
+      }
+    </script>
+  </body>
+</html>

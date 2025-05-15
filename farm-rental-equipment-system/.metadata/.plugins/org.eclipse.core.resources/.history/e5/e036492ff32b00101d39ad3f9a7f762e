@@ -1,0 +1,9 @@
+package com.farmSystem.service;
+
+import com.farmSystem.DTO.EquipmentDTO;
+
+public interface EquipmentService {
+	
+	int saveEquipment(EquipmentDTO equipmentDTO) throws Exceptio;
+
+}

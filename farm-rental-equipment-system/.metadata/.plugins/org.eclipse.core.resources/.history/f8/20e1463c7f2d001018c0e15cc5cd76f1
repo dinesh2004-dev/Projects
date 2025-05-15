@@ -1,0 +1,5 @@
+package com.farmSystem.DTO;
+
+public class BookingsRequestDTO {
+
+}

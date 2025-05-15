@@ -1,0 +1,32 @@
+package com.farmSystem.service.impl;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.service.LenderService;
+
+public class LenderServiceImpl implements LenderService {
+	
+	@Autowired
+	private BookingsRepository bookingsRepository;
+
+	@Override
+	public String updateBookingStatus(int id, BookingStatus status) {
+		String lenderUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+	    Bookings booking = bookingsRepository.findById(id).orElseThrow();
+
+	    if (!booking.getLender().getUsername().equals(lenderUsername)) {
+	        return "Not authorized to update this booking";
+	    }
+
+	    booking.setBookingStatus(status);
+	    bookingsRepository.save(booking);
+
+	    return "Booking " + status.name().toLowerCase();
+	}
+
+}

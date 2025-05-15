@@ -1,0 +1,31 @@
+package com.farmSystem.controller;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.farmSystem.enums.BookingStatus;
+
+@RestController
+public class LenderController {
+	@PutMapping("/bookings/{id}/status")
+	public ResponseEntity<?> updateBookingStatus(@PathVariable Long id, @RequestParam BookingStatus status) {
+	    String lenderUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+	    Booking booking = bookingRepository.findById(id).orElseThrow();
+
+	    if (!booking.getLender().getUsername().equals(lenderUsername)) {
+	        return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Not authorized to update this booking");
+	    }
+
+	    booking.setStatus(status);
+	    bookingRepository.save(booking);
+
+	    return ResponseEntity.ok("Booking " + status.name().toLowerCase());
+	}
+
+}

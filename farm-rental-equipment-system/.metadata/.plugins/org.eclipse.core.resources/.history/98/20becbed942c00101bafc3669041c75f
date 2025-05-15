@@ -1,0 +1,61 @@
+package com.farmSystem.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.farmSystem.DTO.EquipmentDTO;
+import com.farmSystem.DTO.SearchEquipmentDTO;
+import com.farmSystem.Repository.EquipmentRepository;
+import com.farmSystem.Repository.UserRepository;
+import com.farmSystem.Util.EquipmentMapper;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+import com.farmSystem.service.EquipmentService;
+
+@Service
+public class EquipmentServiceImpl implements EquipmentService {
+	
+	@Autowired
+	private EquipmentRepository equipmentRepository;
+	
+	@Autowired
+	
+	private UserRepository userRepository;
+	@Autowired
+	
+	private EquipmentMapper equipmentMapper;
+
+	@Override
+	public int saveEquipment(EquipmentDTO equipmentDTO) throws Exception {
+		
+		String username = SecurityContextHolder.getContext().getAuthentication().getName();
+		
+		User user = userRepository.findByEmailId(username).get();
+		
+		String userRole = user.getRole().toString();
+		
+		if(userRole.equals("Renter")) {
+			
+			throw new Exception("only Lender Or Admin Can add an Equipment");
+		}
+		
+		Equipment equipment = equipmentMapper.EquipmentEntityToEquipmentDTO(equipmentDTO);
+		
+		equipment.setOwner(user);
+		
+		equipmentRepository.save(equipment);
+		
+		return equipment.getId();
+		
+	}
+	
+	@Override
+	public List<User> searchEquipment(SearchEquipmentDTO searchEquipmentDTO){
+		
+		return equipmentRepository.serchEquipment();
+	}
+
+}

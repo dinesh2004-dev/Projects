@@ -1,0 +1,2 @@
+user.not.found = "User Not Found with id : %s"
+equipment.not.found="Equipment Not Found With Id : %s"

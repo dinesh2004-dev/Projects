@@ -1,0 +1,31 @@
+package com.farmSystem.Repository.Impl;
+
+import java.util.List;
+
+import com.farmSystem.entity.User;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+
+public class CustomEquipmentRepository implements com.farmSystem.Repository.CustomEquipmentRepository {
+	
+	@PersistenceUnit
+	private EntityManagerFactory entityManagerFactory;
+
+	@Override
+	public List<User> serchEquipment(String category, String location, Double minRate, Double maxRate, String sortField,
+			String sortOrder, int pageNumber, int pageSize, double userLng, double userLat, Double radius) {
+		
+		try(EntityManager entityManager = entityManagerFactory.createEntityManager()){
+			
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			
+			CriteriaQuery<User> criteriaQuery = criteriaBuilder.createQuery(User.class);
+		}
+	
+	}
+
+}

@@ -1,0 +1,5 @@
+package com.farmSystem.Repository;
+
+public interface BookingsRepository {
+
+}

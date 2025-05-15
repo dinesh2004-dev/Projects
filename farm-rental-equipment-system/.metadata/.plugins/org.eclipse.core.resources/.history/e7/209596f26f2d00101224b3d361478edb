@@ -1,0 +1,9 @@
+package com.farmSystem.service;
+
+import com.farmSystem.enums.PaymentStatus;
+
+public interface BookingsService {
+	
+	PaymentStatus book(int id);
+
+}

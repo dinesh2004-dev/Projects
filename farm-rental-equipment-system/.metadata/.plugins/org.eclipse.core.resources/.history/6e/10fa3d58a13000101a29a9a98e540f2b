@@ -1,0 +1,18 @@
+package com.farmSystem.service.impl;
+
+import org.springframework.stereotype.Service;
+
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.service.PaymentService;
+
+@Service
+public class PaymentServiceImpl implements PaymentService{
+	
+	private BookingsRepository bookingsRepository;
+
+	@Override
+	public String initiatePayment(int bookingId) {
+		
+	}
+
+}

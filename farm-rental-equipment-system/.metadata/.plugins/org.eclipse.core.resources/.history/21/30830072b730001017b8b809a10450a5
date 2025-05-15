@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Razorpay Payment Gateway</title>
+	</head>
+	<body>
+		<h2>Make Payment</h2>
+		
+		<form id = "paymentform">
+			<label for = "amount">Enter Amount(INR):</label>
+			<input type ="number" id = "amount" name = "amount">
+			<input type="hidden" id="bookingId" name="bookingId">
+			<button type = "button" onclick="initiatePayment()">Pay Now</button>
+		</form>
+		<script>
+		  // Get bookingId from URL and set it to the input
+		  const params = new URLSearchParams(window.location.search);
+		  const bookingId = params.get("bookingId");
+
+		  if (bookingId) {
+		    document.getElementById("bookingId").value = bookingId;
+		  }
+		</script>
+		<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+		<script>
+			function initiatePayment(){
+				
+				const amount = parseInt(document.getElementById('amount').value, 10);
+				
+				const bookingId = document.getElementById('bookingId').value;
+
+				const token = localStorage.getItem("jwt_token");
+				
+				fetch("http://localhost:8080/api/payment/create-order",{
+					method : "POST",
+					headers:{
+						"Content-Type" : "application/x-www-form-urlencoded",
+
+						Authorization: "Bearer " + token
+					},
+					body : `amount=${amount}&bookingId=${bookingId}`
+				})
+				.then(response => response.json())
+				.then(order => {
+						const options = {
+							         key: "rzp_test_jZ1nAY5xoJtd66", // Replace with your key
+							         amount: order.amount,
+							         currency: order.currency,
+							         name: "Test Payment",
+							         description: "Testing Razorpay Integration",
+							         order_id: order.id,
+									 "callback_url": "http://localhost:8080/api/payment/payment-callback",
+									 "prefill": {
+									                  "name": "User Name",
+									                  "email": "user@example.com",
+												}
+									
+						};
+						const rzp1 = new Razorpay(options);
+						rzp1.open();
+				});
+			}
+		</script>
+	</body>
+</html>

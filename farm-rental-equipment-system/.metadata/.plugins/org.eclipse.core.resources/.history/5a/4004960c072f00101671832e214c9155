@@ -1,0 +1,20 @@
+package com.farmSystem.controller;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PaymentController {
+	
+	@Value("${razorpay.api.key}")
+	private static String key;
+	
+	@Value("${razorpay.key.secret}")
+	private static String secret;
+	
+	public ResponseEntity<String> createOrder(@RequestParam("amount") int amount){
+		
+	}
+}

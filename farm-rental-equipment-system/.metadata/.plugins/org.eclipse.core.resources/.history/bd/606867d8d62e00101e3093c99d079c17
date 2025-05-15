@@ -1,0 +1,110 @@
+package com.farmSystem.Repository.Impl;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.farmSystem.DTO.EquipmentDTO;
+import com.farmSystem.DTO.SearchEquipmentDTO;
+import com.farmSystem.Repository.CustomEquipmentRepository;
+import com.farmSystem.Util.EquipmentMapper;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.PersistenceUnit;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+
+public class CustomEquipmentRepositoryImpl implements CustomEquipmentRepository {
+	
+	@PersistenceUnit
+	private EntityManagerFactory entityManagerFactory;
+	
+	@Autowired
+	private EquipmentMapper equipmentMapper;
+
+	@Override
+	public List<EquipmentDTO> serchEquipment(SearchEquipmentDTO searchEquipmentDTO) {
+		
+		try(EntityManager entityManager = entityManagerFactory.createEntityManager()){
+			
+			CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+			
+			CriteriaQuery<Equipment> criteriaQuery = criteriaBuilder.createQuery(Equipment.class);
+			
+			Root<Equipment> root =criteriaQuery.from(Equipment.class);
+			
+			Join<Equipment,User> ownerJoin = root.join("owner",JoinType.INNER);
+			
+			Predicate predicate = criteriaBuilder.conjunction();
+			
+			if(searchEquipmentDTO.getCategory() != null && !searchEquipmentDTO.getCategory().isEmpty()) {
+				
+				predicate = criteriaBuilder.and(predicate,criteriaBuilder
+																.equal(root.get("category"),searchEquipmentDTO.getCategory()));
+			}
+			
+			if (searchEquipmentDTO.getLocation() != null && !searchEquipmentDTO.getLocation().isEmpty()) {
+
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.like(root.get("location"), "%" + searchEquipmentDTO.getLocation() + "%"));
+			}
+
+			if (searchEquipmentDTO.getRadius()!= null) {
+
+				// Expression for distance calculation (in meters)
+				Expression<Double> distanceExpr = criteriaBuilder.function("ST_Distance_Sphere", Double.class,
+						criteriaBuilder.function("POINT", Object.class, ownerJoin.get("longitude"),
+								ownerJoin.get("latitude")),
+						criteriaBuilder.function("POINT", Object.class,
+								criteriaBuilder.literal(searchEquipmentDTO.getUserLng()), criteriaBuilder.literal(searchEquipmentDTO.getUserLat())));
+
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.lessThanOrEqualTo(distanceExpr, searchEquipmentDTO.getRadius() * 1000));
+
+			}
+			if (searchEquipmentDTO.getMinRate() != null) {
+
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.greaterThanOrEqualTo(root.get("rentalRate"), searchEquipmentDTO.getMinRate()));
+			}
+			if (searchEquipmentDTO.getMaxRate() != null) {
+				predicate = criteriaBuilder.and(predicate,
+						criteriaBuilder.lessThanOrEqualTo(root.get("rentalRate"), searchEquipmentDTO.getMaxRate()));
+			}
+
+			criteriaQuery.select(root).where(predicate);
+
+			// 🔹 Apply Sorting
+			if (searchEquipmentDTO.getSortField() != null && !searchEquipmentDTO.getSortField().isEmpty()) {
+				if ("DESC".equalsIgnoreCase(searchEquipmentDTO.getSortOrder())) {
+					criteriaQuery.orderBy(criteriaBuilder.desc(root.get(searchEquipmentDTO.getSortField())));
+				} else {
+					criteriaQuery.orderBy(criteriaBuilder.asc(root.get(searchEquipmentDTO.getSortField())));
+				}
+			}
+			
+			
+			int skipSize = searchEquipmentDTO.getPageNumber() * searchEquipmentDTO.getPageSize();
+			List<Equipment> result = entityManager.createQuery(criteriaQuery)
+					.setMaxResults(searchEquipmentDTO.getPageSize())
+					.setFirstResult(skipSize)
+					.getResultList();
+			
+			return result.stream().map(equipment -> equipmentMapper.equipmentEntityToEquipmentDTO(equipment)).collect(Collectors.toList());
+		}
+	
+	
+	}
+
+	
+
+}

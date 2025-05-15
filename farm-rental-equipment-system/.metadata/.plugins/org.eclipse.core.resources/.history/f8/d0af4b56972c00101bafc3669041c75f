@@ -1,0 +1,11 @@
+package com.farmSystem.Repository;
+
+import java.util.List;
+
+import com.farmSystem.DTO.SearchEquipmentDTO;
+import com.farmSystem.entity.User;
+
+public interface CustomEquipmentRepository {
+	
+	List<User> serchEquipment(SearchEquipmentDTO searchEquipmentDTO);
+}

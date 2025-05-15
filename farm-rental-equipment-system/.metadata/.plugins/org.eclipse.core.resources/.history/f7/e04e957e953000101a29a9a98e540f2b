@@ -1,0 +1,82 @@
+package com.farmSystem.service.impl;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.farmSystem.DTO.BookingsDTO;
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.Repository.UserRepository;
+import com.farmSystem.Util.BookingsMapper;
+import com.farmSystem.Util.UsersUtil;
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+import com.farmSystem.enums.Availability;
+import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.exception.BookingNotFoundException;
+import com.farmSystem.exception.EquipmentNotFoundException;
+import com.farmSystem.service.LenderService;
+@Service
+public class LenderServiceImpl implements LenderService {
+	
+	@Autowired
+	private BookingsRepository bookingsRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+	
+	@Autowired
+	private BookingsMapper bookingsMapper;
+	
+	@Autowired
+	private UsersUtil usersUtil;
+	
+	@Value("${Booking.not.found}")
+	private String bookingNotfound;
+
+	@Override
+	public String updateBookingStatus(int id, BookingStatus status) throws BookingNotFoundException, EquipmentNotFoundException {
+		String lenderEmail = usersUtil.getCurrentUserEmail();
+		
+
+	    Bookings booking = bookingsRepository.findById(id)
+	    									 .orElseThrow(() -> new BookingNotFoundException(String.format(lenderEmail,id)));
+	    
+	    if (!booking.getLender().getEmailId().equals(lenderEmail)) {
+	        return "Not authorized to update this booking";
+	    }
+	    
+	    Equipment equipment = booking.getEquipment();
+	    
+	    if(Objects.isNull(equipment)) {
+	    	
+	    	throw new EquipmentNotFoundException("there is no Equipment Associated with booking  id : "+id);
+	    }
+
+	    booking.setBookingStatus(status);
+	    bookingsRepository.save(booking);
+	    
+	    equipment.setAvailability(Availability.Booked);
+
+	    return "Booking " + status.name().toLowerCase();
+	}
+	
+	@Override
+	public List<BookingsDTO> getAllRequestBookings(){
+		
+		String lenderUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+	    User lender = userRepository.findByEmailId(lenderUsername).get();
+	    
+	    List<Bookings> bookingsList = bookingsRepository.findAllByLender(lender);
+	    
+	    return bookingsList.stream().map(bookings -> bookingsMapper.bookingsEntityToBookingsDTO(bookings)).collect(Collectors.toList());
+	}
+
+}

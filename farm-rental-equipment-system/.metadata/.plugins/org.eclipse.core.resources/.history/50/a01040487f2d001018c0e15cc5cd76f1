@@ -1,0 +1,11 @@
+package com.farmSystem.DTO;
+
+import java.time.LocalDateTime;
+
+public class BookingsRequestDTO {
+	private int equipmentId;
+	
+	private LocalDateTime startDate;
+	
+	private LocalDateTime endDate;
+}

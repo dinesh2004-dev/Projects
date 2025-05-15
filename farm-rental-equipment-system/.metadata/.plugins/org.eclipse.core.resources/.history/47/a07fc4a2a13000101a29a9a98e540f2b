@@ -1,0 +1,5 @@
+package com.farmSystem.service;
+
+public interface PaymentService {
+	String initiatePayment(int bookingId);
+}

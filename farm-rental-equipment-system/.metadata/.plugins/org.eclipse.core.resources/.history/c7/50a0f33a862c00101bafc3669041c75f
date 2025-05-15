@@ -1,0 +1,10 @@
+package com.farmSystem.Repository;
+
+import jakarta.persistence.EntityManagerFactory;
+
+public interface CustomEquipmentRepository {
+	
+	@Persistant
+	EntityManagerFactory entityManagerFactory;
+
+}

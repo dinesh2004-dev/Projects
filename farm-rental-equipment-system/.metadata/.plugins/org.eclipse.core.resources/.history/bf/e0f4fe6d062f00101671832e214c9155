@@ -1,0 +1,11 @@
+package com.farmSystem.controller;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class PaymentController {
+	
+	@Value("${razorpay.api.key}")
+	private static final String KEY;
+}

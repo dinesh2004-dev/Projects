@@ -1,0 +1,7 @@
+package com.farmSystem.service;
+
+public interface BookingsService {
+	
+	String  book(BookingsrequestDTO bookingsDTO);
+
+}

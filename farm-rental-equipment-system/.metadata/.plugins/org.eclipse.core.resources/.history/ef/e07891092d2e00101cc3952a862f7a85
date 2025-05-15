@@ -1,0 +1,38 @@
+package com.farmSystem.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.farmSystem.DTO.BookingsDTO;
+import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.service.LenderService;
+
+@RestController
+public class LenderController {
+	@Autowired
+	private LenderService lenderService;
+	
+	@PutMapping("/bookings/{id}/status")
+	public ResponseEntity<?> updateBookingStatus(@PathVariable int id, @RequestParam BookingStatus status) {
+	    
+		String response = lenderService.updateBookingStatus(id, status);
+		
+	    return ResponseEntity.ok(response);
+	}
+	
+	public ResponseEntity<BookingsDTO> getAllRequestBookings(){
+		
+		List<BookingsDTO> bookingsDTOList = lenderService.getAllRequestBookings();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(bookingsDTOList);
+		
+	}
+
+}

@@ -1,0 +1,3 @@
+user.not.found = "User Not Found with id : %s"
+equipment.not.found="Equipment Not Found With Id : %s"
+Booking.not.found="There is no Booking with Id:%s;

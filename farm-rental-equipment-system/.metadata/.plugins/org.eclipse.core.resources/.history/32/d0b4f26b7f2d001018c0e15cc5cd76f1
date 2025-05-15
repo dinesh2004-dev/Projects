@@ -1,0 +1,9 @@
+package com.farmSystem.service;
+
+import com.farmSystem.DTO.BookingsDTO;
+
+public interface BookingsService {
+	
+	String  book(BookingsDTO bookingsDTO);
+
+}

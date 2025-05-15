@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Razorpay Payment Gateway</title>
+</head>
+<body>
+    <h2>Make Payment</h2>
+
+    <form id="paymentform">
+        <label for="amount">Amount (INR):</label>
+        <input type="number" id="amount" name="amount" readonly>
+        <input type="hidden" id="bookingId" name="bookingId">
+        <br><br>
+        <button type="button" id="payButton" onclick="initiatePayment()">Pay Now</button>
+    </form>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const bookingId = params.get("bookingId");
+        const token = localStorage.getItem("jwt_token");
+
+        if (bookingId) {
+            document.getElementById("bookingId").value = bookingId;
+
+            // Fetch fixed amount from backend
+            fetch(`http://localhost:8080/api/payment/booking-amount?bookingId=${bookingId}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + token
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(msg => {
+                        throw new Error(msg || "Failed to fetch amount.");
+                    });
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.getElementById("amount").value = data.amount;
+            })
+            .catch(error => {
+                alert("Error: " + error.message);
+                document.getElementById("payButton").disabled = true;
+            });
+        } else {
+            alert("Booking ID not found in URL.");
+            document.getElementById("payButton").disabled = true;
+        }
+
+        function initiatePayment() {
+            const amount = parseInt(document.getElementById('amount').value, 10);
+            const bookingId = document.getElementById('bookingId').value;
+
+            fetch("http://localhost:8080/api/payment/create-order", {
+                method: "POST",
+                headers: {
+                    "Authorization": "Bearer " + token,
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: `amount=${amount}&bookingId=${bookingId}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(msg => {
+                        throw new Error(msg || "Failed to create order.");
+                    });
+                }
+                return response.json();
+            })
+            .then(order => {
+                const options = {
+                    key: "rzp_test_jZ1nAY5xoJtd66", // Replace with your Razorpay Key
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: "Farm Equipment Payment",
+                    description: "Booking Payment",
+                    order_id: order.id,
+                    callback_url: "http://localhost:8080/api/payment/payment-callback",
+                    prefill: {
+                        name: "User Name",
+                        email: "user@example.com"
+                    }
+                };
+
+                const rzp1 = new Razorpay(options);
+                rzp1.open();
+            })
+            .catch(error => {
+                alert("Payment Error: " + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

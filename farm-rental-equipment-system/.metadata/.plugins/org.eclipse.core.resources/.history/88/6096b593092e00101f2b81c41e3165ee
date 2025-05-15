@@ -1,0 +1,14 @@
+package com.farmSystem.service.impl;
+
+import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.service.LenderService;
+
+public class LenderServiceImpl implements LenderService {
+
+	@Override
+	public String updateBookingStatus(int id, BookingStatus status) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

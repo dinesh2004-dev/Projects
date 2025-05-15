@@ -1,0 +1,45 @@
+package com.farmSystem.controller;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.farmSystem.DTO.BookingsRequestDTO;
+import com.farmSystem.exception.EquipmentNotFoundException;
+import com.farmSystem.exception.UserNotFoundException;
+import com.farmSystem.service.BookingsService;
+
+@Validated
+@RequestMapping("/booking")
+@RestController
+public class BookingsController {
+	
+	@Autowired
+	private BookingsService bookingService;
+	
+	@PostMapping
+	public ResponseEntity<String> bookEquipment(@RequestBody BookingsRequestDTO bookingsRequest)throws EquipmentNotFoundException,UserNotFoundException{
+		
+		String status = bookingService.book(bookingsRequest);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(status);
+		
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<String> getBookingStatus(@PathVariable int id){
+		
+		String status =  bookingService.getBookingStatus();
+		
+		return ResponseEntity.status(HttpStatus.OK).body(status);
+	}
+	
+
+}

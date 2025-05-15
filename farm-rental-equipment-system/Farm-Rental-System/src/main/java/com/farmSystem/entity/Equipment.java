@@ -1,0 +1,73 @@
+package com.farmSystem.entity;
+
+import java.time.LocalDateTime;
+
+import com.farmSystem.enums.Availability;
+import com.farmSystem.enums.Category;
+import com.farmSystem.enums.Condition;
+//import com.google.gson.annotations.Expose;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+
+@ToString
+@Getter
+@Setter
+@Entity
+@Table(name = "Equipment")
+public class Equipment extends Base {
+
+	@Column(nullable = false)
+	private String name;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "owner_id", referencedColumnName = "id", nullable = false)
+	private User owner;
+
+	@Enumerated(EnumType.STRING)
+
+	@Column(nullable = false)
+
+	private Category category;
+
+	@Column(nullable = false)
+	private String location;
+
+	@Column(nullable = false)
+	private String description;
+
+	@Enumerated(EnumType.STRING)
+
+	@Column(name = "`condition`", nullable = false)
+	private Condition condition;
+
+	@Column(name = "rental_rate", nullable = false, precision = 2)
+	private double rentalRate;
+
+	@Enumerated(EnumType.STRING)
+
+	@Column(nullable = false)
+
+	private Availability availability;
+
+	@Column(insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+	private LocalDateTime createDate;
+	
+	public int getId() {
+		return super.getId();
+	}
+
+	
+
+}

@@ -1,0 +1,7 @@
+package com.farmSystem.service;
+
+import com.farmSystem.enums.BookingStatus;
+
+public interface LenderService {
+	String updateBookingStatus(int id,BookingStatus status);
+}

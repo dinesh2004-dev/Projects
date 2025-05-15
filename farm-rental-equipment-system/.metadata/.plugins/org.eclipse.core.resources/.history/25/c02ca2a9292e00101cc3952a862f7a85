@@ -1,0 +1,56 @@
+package com.farmSystem.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import com.farmSystem.DTO.BookingsDTO;
+import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.Repository.UserRepository;
+import com.farmSystem.entity.Bookings;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
+import com.farmSystem.enums.Availability;
+import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.service.LenderService;
+@Service
+public class LenderServiceImpl implements LenderService {
+	
+	@Autowired
+	private BookingsRepository bookingsRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
+
+	@Override
+	public String updateBookingStatus(int id, BookingStatus status) {
+		String lenderUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+	    Bookings booking = bookingsRepository.findById(id).orElseThrow();
+	    
+	    Equipment equipment = booking.getEquipment();
+	  
+
+	    if (!booking.getLender().getUsername().equals(lenderUsername)) {
+	        return "Not authorized to update this booking";
+	    }
+
+	    booking.setBookingStatus(status);
+	    bookingsRepository.save(booking);
+	    
+	    equipment.setAvailability(Availability.Booked);
+
+	    return "Booking " + status.name().toLowerCase();
+	}
+	
+	@Override
+	public List<BookingsDTO> getAllRequestBookings(){
+		
+		String lenderUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+	    User lender = 
+	}
+
+}
