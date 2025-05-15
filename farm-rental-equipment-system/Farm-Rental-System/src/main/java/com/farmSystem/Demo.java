@@ -13,6 +13,8 @@ public class Demo implements WebMvcConfigurer{
 
 	public static void main(String[] args) {
 		SpringApplication.run(Demo.class, args);
+		
+		System.out.println("Hello");
 	}
 	
 	@Override
