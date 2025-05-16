@@ -3,7 +3,6 @@ package com.farmSystem.service.impl;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,16 +62,13 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
-	public Optional<User> findById(int id) throws UserNotFoundException {
+	public UserDTO findById(int id) throws UserNotFoundException {
 		
-		Optional<User> user = userRepository.findById(id);
+		User user = userRepository.findById(id)
+								  .orElseThrow(() -> new UserNotFoundException(String.format(ownerNotFound, id)));
 
-		if (user.isEmpty()) {
-
-			throw new UserNotFoundException(String.format(ownerNotFound, id));
-		}
 		
-		return user;
+		return userMapper.UserEntityToUserDTO(user);
 
 	}
 
@@ -106,9 +102,12 @@ public class UserServiceImpl implements UserService{
 		userRepository.deleteById(id);
 	}
 	@Override
-	public List<User> findAllUsers(){
+	public List<UserDTO> findAllUsers(){
 		
-		return userRepository.findAll();
+		List<User> userList = userRepository.findAll();
+		
+		return userList.stream().map(user -> userMapper.UserEntityToUserDTO(user))
+								.toList();
 	}
 
 	

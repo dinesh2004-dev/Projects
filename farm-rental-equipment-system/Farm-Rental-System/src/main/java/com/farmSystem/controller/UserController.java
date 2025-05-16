@@ -45,11 +45,11 @@ public class UserController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<User> findById(@RequestParam int id) throws UserNotFoundException{
+	public ResponseEntity<UserDTO> findById(@RequestParam int id) throws UserNotFoundException{
 		
-		Optional<User> user =userService.findById(id);
+		UserDTO userDTO =userService.findById(id);
 		
-		return ResponseEntity.status(HttpStatus.OK).body(user.get());
+		return ResponseEntity.status(HttpStatus.OK).body(userDTO);
 	}
 	
 	
@@ -78,9 +78,9 @@ public class UserController {
 	}
 	
 	@GetMapping("/all")
-	public ResponseEntity<List<User>> findAllUsers(){
+	public ResponseEntity<List<UserDTO>> findAllUsers(){
 		
-		List<User> userList = userService.findAllUsers();
+		List<UserDTO> userList = userService.findAllUsers();
 		
 		return ResponseEntity.status(HttpStatus.OK).body(userList);
 	}

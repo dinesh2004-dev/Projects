@@ -58,7 +58,7 @@ public class User extends Base implements UserDetails{
 	private LocalDateTime createdAt;
 	 @Override
 	 public Collection<? extends GrantedAuthority> getAuthorities() {
-	     return List.of(new SimpleGrantedAuthority(role.toString())); // or use roles if you have them
+		 return List.of(new SimpleGrantedAuthority("ROLE_" + role.name().toUpperCase()));
 	 }
 	 @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
 	 private List<Equipment> equipments;
