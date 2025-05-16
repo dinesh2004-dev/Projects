@@ -4,6 +4,8 @@ src/main/resources/concurrent_test.py
 src/main/resources/dataset.py
 src/main/resources/messages.properties
 src/main/resources/config.properties
+
+src/test/java/com/farmSystem
 src/test
 target/
 !.mvn/wrapper/maven-wrapper.jar
