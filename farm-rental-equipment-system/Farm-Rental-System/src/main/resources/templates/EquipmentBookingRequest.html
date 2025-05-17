@@ -1,0 +1,39 @@
+<!-- equipment-booking-notification.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Booking Request</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f2f2f2; padding: 20px;">
+    <div style="background-color: #ffffff; padding: 25px; border-radius: 10px; max-width: 600px; margin: auto; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h2 style="color: #333;">New Equipment Booking Request</h2>
+        
+        <p>Hi <strong th:text="${lenderName}">Lender</strong>,</p>
+
+        <p>
+            <strong th:text="${userName}">User</strong> has requested to book your equipment: 
+            <strong th:text="${equipmentName}">Tractor</strong>.
+        </p>
+
+        <p><strong>Booking Details:</strong></p>
+        <ul>
+            <li><strong>Booking Date Range:</strong> 
+                <span th:text="${bookingStartDate}">May 20, 2025</span> – 
+                <span th:text="${bookingEndDate}">May 23, 2025</span>
+            </li>
+            <li><strong>Location:</strong> <span th:text="${location}">Village Name</span></li>
+        </ul>
+
+        <p>Please review and respond to this request:</p>
+
+        <div style="margin: 20px 0;">
+            <a th:href="@{${approveUrl}}" style="background-color: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin-right: 10px;">Approve</a>
+            <a th:href="@{${rejectUrl}}" style="background-color: #dc3545; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Reject</a>
+        </div>
+
+        <p>If you have any questions, feel free to contact our support team.</p>
+        <p>Thanks,<br><strong>Farm Equipment Rental System</strong></p>
+    </div>
+</body>
+</html>

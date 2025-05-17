@@ -15,8 +15,10 @@ import com.farmSystem.Repository.UserRepository;
 import com.farmSystem.Util.UserMapper;
 import com.farmSystem.entity.User;
 import com.farmSystem.exception.UserNotFoundException;
+import com.farmSystem.service.EmailService;
 import com.farmSystem.service.UserService;
 
+import jakarta.mail.MessagingException;
 import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Service
@@ -32,6 +34,9 @@ public class UserServiceImpl implements UserService{
 	@Lazy
 	private PasswordEncoder passwordEncoder;
 	
+	@Autowired
+	private EmailService emailService;
+	
 	
 	
 	@Value("${google.maps.key}")
@@ -40,7 +45,7 @@ public class UserServiceImpl implements UserService{
 	@Value("${user.not.found}")
 	private String ownerNotFound;
 	
-	public int saveUser(UserDTO userDTO) {
+	public int saveUser(UserDTO userDTO){
 		
 		GoogleMapsService.Coordinates coords = googleMapsService.getCoordinatesFromAddress(userDTO.getAddress());
 		
@@ -57,6 +62,8 @@ public class UserServiceImpl implements UserService{
 		User user = userMapper.UserDTOToUser(userDTO);
 		
 		userRepository.save(user);
+		
+		emailService.sendWelcomeMessage(user.getEmailId());
 		
 		return user.getId();
 	}

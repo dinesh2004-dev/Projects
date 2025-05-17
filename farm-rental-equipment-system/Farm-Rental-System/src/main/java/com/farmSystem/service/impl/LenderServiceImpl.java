@@ -21,6 +21,7 @@ import com.farmSystem.enums.Availability;
 import com.farmSystem.enums.BookingStatus;
 import com.farmSystem.exception.BookingNotFoundException;
 import com.farmSystem.exception.EquipmentNotFoundException;
+import com.farmSystem.service.EmailService;
 import com.farmSystem.service.LenderService;
 @Service
 public class LenderServiceImpl implements LenderService {
@@ -38,6 +39,9 @@ public class LenderServiceImpl implements LenderService {
 	private BookingsMapper bookingsMapper;
 	
 	@Autowired
+	private EmailService emailService;
+	
+	@Autowired
 	private UsersUtil usersUtil;
 	
 	@Value("${Booking.not.found}")
@@ -45,7 +49,7 @@ public class LenderServiceImpl implements LenderService {
 
 	@Override
 	public String updateBookingStatus(int id, BookingStatus status) throws BookingNotFoundException, EquipmentNotFoundException {
-		System.out.println("*************2****************");
+		
 		String lenderEmail = usersUtil.getCurrentUserEmail();
 		
 
@@ -56,12 +60,12 @@ public class LenderServiceImpl implements LenderService {
 	        return "Not authorized to update this booking";
 	    }
 	    
-	    System.out.println("*************3****************");
+	    
 	    
 	    if (booking.getBookingStatus() != BookingStatus.Pending) {
 	        return "Booking already processed.";
 	    }
-	    System.out.println("*************4****************");
+	    
 	    if(status == BookingStatus.Approved) {
 	    	
 	    	booking.setBookingStatus(status);
@@ -84,12 +88,16 @@ public class LenderServiceImpl implements LenderService {
 	    	
 	    	bookingsRepository.save(booking);
 	    	
+	    	emailService.sendBookingSatusNotificationToRenter(booking.getRenter().getEmailId(),booking.getRenter().getFullName(),status.toString(),
+		    		booking.getLender().getFullName(),booking.getEquipment().getName(),booking.getStart_date(),booking.getEnd_date());
+	    	
 	    	return "Booking rejected.";
 	    }
 	    else {
 	    	
 	    	 return "Invalid status update.";
 	    }
+	    
 	    
 	}
 	

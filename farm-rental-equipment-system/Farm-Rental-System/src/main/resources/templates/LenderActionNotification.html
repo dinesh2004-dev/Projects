@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Booking Update</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; padding: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        <h2 style="color: #333333;">Your Booking Request Has Been <span th:text="${status}">Approved/Rejected</span></h2>
+
+        <p>Hello <strong th:text="${userName}">User Name</strong>,</p>
+
+        <p>
+            We wanted to inform you that your booking request for the equipment 
+            <strong th:text="${equipmentName}">Tractor</strong> has been 
+            <strong th:text="${status}">approved/rejected</strong> by the lender 
+            <strong th:text="${lenderName}">Lender Name</strong>.
+        </p>
+
+        <p><strong>Booking Details:</strong></p>
+        <ul>
+            <li><strong>Date Range:</strong> 
+                <span th:text="${bookingStartDate}">May 23, 2025</span> – 
+                <span th:text="${bookingEndDate}">May 25, 2025</span>
+            </li>
+            <li><strong>Location:</strong> <span th:text="${location}">Farm Area</span></li>
+        </ul>
+
+        <div th:if="${status.equals('Approved')}" style="margin-top: 20px;">
+            <p style="color: green; font-weight: bold;">Your booking is confirmed! Please coordinate with the lender for further steps.</p>
+        </div>
+
+        <div th:if="${status.equals('Rejected')}" style="margin-top: 20px;">
+            <p style="color: red; font-weight: bold;">Unfortunately, your booking was rejected. You may try booking another equipment or date.</p>
+        </div>
+
+        <p style="margin-top: 30px;">Thank you for using <strong>Farm Equipment Rental System</strong>.</p>
+
+        <p style="font-size: 12px; color: #888;">This is an automated message. Please do not reply directly to this email.</p>
+    </div>
+</body>
+</html>

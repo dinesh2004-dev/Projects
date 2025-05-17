@@ -29,6 +29,7 @@ import com.farmSystem.exception.LenderNotFoundException;
 import com.farmSystem.exception.RenterNotFoundException;
 import com.farmSystem.exception.UserNotFoundException;
 import com.farmSystem.service.BookingsService;
+import com.farmSystem.service.EmailService;
 
 import jakarta.transaction.Transactional;
 
@@ -46,6 +47,9 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private EmailService emailService;
 	
 	
 	@Autowired
@@ -135,6 +139,9 @@ public class BookingServiceImpl implements BookingsService {
 		equipmentRepository.save(equipment);
 		
 		bookingsRepository.save(booking);
+		
+		emailService.sendBookingRequestToLender(booking.getLender().getEmailId(),booking.getLender().getFullName(),booking.getRenter().getFullName(),booking.getEquipment().getName(),
+				booking.getStart_date(),booking.getEnd_date(),booking.getRenter().getAddress());
 		
 		return String.format("Request Sent To Lender with id : %s",booking.getLender().getId());
 		
