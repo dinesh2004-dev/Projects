@@ -1,7 +1,7 @@
 package com.farmSystem.enums;
 
 public enum PaymentStatus {
-	PENDING, PAID, REFUNDED
+	PENDING, PAID, REFUNDED, FAILED
 }
 
 

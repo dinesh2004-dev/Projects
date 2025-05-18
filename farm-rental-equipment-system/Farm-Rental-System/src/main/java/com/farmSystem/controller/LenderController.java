@@ -27,7 +27,6 @@ public class LenderController {
 	@PutMapping("/bookings/{id}/status")
 	public ResponseEntity<String> updateBookingStatus(@PathVariable int id, @RequestParam BookingStatus status) throws BookingNotFoundException, EquipmentNotFoundException {
 	    
-		System.out.println("*************1****************");
 		String response = lenderService.updateBookingStatus(id, status);
 		
 	    return ResponseEntity.status(HttpStatus.OK).body(response);

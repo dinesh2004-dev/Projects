@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.farmSystem.enums.BookingStatus;
 import com.farmSystem.enums.PaymentStatus;
+import com.razorpay.Payment;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +40,8 @@ public class BookingsDTO {
 	 
 	            
 	private LocalDateTime createdAt;
+	
+	private Payment payment;
 	 
 	 
 

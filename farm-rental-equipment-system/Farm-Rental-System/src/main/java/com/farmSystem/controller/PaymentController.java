@@ -16,6 +16,7 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.farmSystem.Repository.BookingsRepository;
 import com.farmSystem.entity.Bookings;
+import com.farmSystem.entity.Payments;
 import com.farmSystem.enums.PaymentStatus;
 import com.farmSystem.exception.BookingNotFoundException;
 import com.farmSystem.service.BookingsService;
@@ -88,9 +89,9 @@ public class PaymentController {
 		
 		String signature = razorpayOrderId + "|" + razorpayPaymentId;
 		
-		
-		
         boolean isValid = Utils.verifySignature(signature, razorpaySignature, secret);
+        
+        
         
         if(isValid) {
         	
@@ -100,7 +101,7 @@ public class PaymentController {
             String bookingIdStr = notes.getString("bookingId");
 
             int bookingId = Integer.parseInt(bookingIdStr);
-            bookingService.confirmBookingAfterPayment(bookingId);
+            bookingService.confirmBookingAfterPayment(bookingId,razorpayOrderId,razorpayPaymentId);
             
            
         	

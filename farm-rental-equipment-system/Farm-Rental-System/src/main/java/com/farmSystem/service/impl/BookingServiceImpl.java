@@ -13,11 +13,14 @@ import com.farmSystem.DTO.BookingsDTO;
 import com.farmSystem.DTO.BookingsRequestDTO;
 import com.farmSystem.Repository.BookingsRepository;
 import com.farmSystem.Repository.EquipmentRepository;
+import com.farmSystem.Repository.PaymentsRepository;
 import com.farmSystem.Repository.UserRepository;
 import com.farmSystem.Util.BookingsMapper;
+import com.farmSystem.Util.PaymentMapper;
 import com.farmSystem.Util.UsersUtil;
 import com.farmSystem.entity.Bookings;
 import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.Payments;
 import com.farmSystem.entity.User;
 import com.farmSystem.enums.Availability;
 import com.farmSystem.enums.BookingStatus;
@@ -49,7 +52,13 @@ public class BookingServiceImpl implements BookingsService {
 	private UserRepository userRepository;
 	
 	@Autowired
+	private PaymentsRepository paymentsRepository;
+	
+	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private PaymentMapper paymentMapper;
 	
 	
 	@Autowired
@@ -185,7 +194,7 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Override
 	@Transactional
-	public void confirmBookingAfterPayment(int bookingId) throws BookingNotFoundException {
+	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException {
 	    Bookings booking = bookingsRepository.findById(bookingId)
 	        .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
@@ -196,6 +205,10 @@ public class BookingServiceImpl implements BookingsService {
 	    booking.setPaymentStatus(PaymentStatus.PAID);
 	    booking.setBookingStatus(BookingStatus.Completed);
 	    bookingsRepository.save(booking);
+	    
+	    Payments payment = paymentMapper.toPayments(booking,razorpayOrderId,razorpayPaymentId);
+	    
+	    paymentsRepository.save(payment);
 	}
 	
 	@Override

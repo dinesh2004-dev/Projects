@@ -18,7 +18,7 @@ public interface BookingsService {
 	
 	List<BookingsDTO> getAllBookings() throws RenterNotFoundException,BookingNotFoundException;
 	
-	public void confirmBookingAfterPayment(int bookingId) throws BookingNotFoundException;
+	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException;
 	
 	String deleteBooking(int id)throws BookingNotFoundException,EquipmentNotFoundException;
 }
