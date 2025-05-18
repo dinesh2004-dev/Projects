@@ -1,5 +1,7 @@
 package com.farmSystem;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,8 +17,7 @@ import com.farmSystem.service.EmailService;
 @PropertySource("classpath:config.properties")
 public class Demo implements WebMvcConfigurer,CommandLineRunner{
 	
-	@Autowired
-	private EmailService emailService;
+	
 
 	public static void main(String[] args) {
 		SpringApplication.run(Demo.class, args);
@@ -32,10 +33,7 @@ public class Demo implements WebMvcConfigurer,CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		
-//		String to = "dineshreddy1421@gmail.com";
-//		
-//		
-//		emailService.sendWelcomeMessage(to);
+		
 	}
 
 }

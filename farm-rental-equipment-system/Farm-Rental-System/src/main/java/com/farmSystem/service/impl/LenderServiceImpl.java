@@ -72,6 +72,9 @@ public class LenderServiceImpl implements LenderService {
 	    	
 	    	bookingsRepository.save(booking);
 	    	
+	    	emailService.sendBookingSatusNotificationToRenter(booking.getRenter().getEmailId(),booking.getRenter().getFullName(),status.toString(),
+		    		booking.getLender().getFullName(),booking.getEquipment().getName(),booking.getStart_date(),booking.getEnd_date(),booking.getRenter().getAddress());
+	    	
 	    	return "Booking approved. Awaiting renter's payment.";
 	    }
 	    else if(status == BookingStatus.Rejected) {
@@ -89,8 +92,8 @@ public class LenderServiceImpl implements LenderService {
 	    	bookingsRepository.save(booking);
 	    	
 	    	emailService.sendBookingSatusNotificationToRenter(booking.getRenter().getEmailId(),booking.getRenter().getFullName(),status.toString(),
-		    		booking.getLender().getFullName(),booking.getEquipment().getName(),booking.getStart_date(),booking.getEnd_date());
-	    	
+		    		booking.getLender().getFullName(),booking.getEquipment().getName(),booking.getStart_date(),booking.getEnd_date(),booking.getRenter().getAddress());
+	    	    	
 	    	return "Booking rejected.";
 	    }
 	    else {

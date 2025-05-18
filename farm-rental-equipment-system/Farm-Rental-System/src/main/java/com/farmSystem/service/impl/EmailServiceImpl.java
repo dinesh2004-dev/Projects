@@ -97,7 +97,7 @@ public class EmailServiceImpl implements EmailService {
 	}
 	
 	@Override
-	public void sendBookingSatusNotificationToRenter(String email,String renterName,String status,String lenderName,String equipmentName,LocalDateTime startDate,LocalDateTime endDate) {
+	public void sendBookingSatusNotificationToRenter(String email,String renterName,String status,String lenderName,String equipmentName,LocalDateTime startDate,LocalDateTime endDate,String location) {
 		
 		String bookingStartDate = dateFormatUtil.formatLocalDateTimeTo(startDate);
 		String bookingEndDate = dateFormatUtil.formatLocalDateTimeTo(startDate);
@@ -110,10 +110,10 @@ public class EmailServiceImpl implements EmailService {
 		context.setVariable("bookingStartDate",bookingStartDate);
 		context.setVariable("bookingEndDate", bookingEndDate);
 		context.setVariable("status", status);
+		context.setVariable("location",location);
 		
 		String  html = templateEngine.process("LenderActionNotification", context);
 		
-		email = "dineshreddy1421@gmail.com";
 		
 		sendMessage(email,html,"Updated Booking Status");
 		

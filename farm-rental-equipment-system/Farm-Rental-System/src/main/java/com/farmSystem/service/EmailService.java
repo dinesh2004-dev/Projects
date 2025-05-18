@@ -13,5 +13,5 @@ public interface EmailService {
 	void sendBookingRequestToLender(String email, String lenderName, String userName, String EquipmentName,
 			LocalDateTime startDate, LocalDateTime endDate, String location);
 	
-	void sendBookingSatusNotificationToRenter(String email,String renterName,String status,String lenderName,String equipmentName,LocalDateTime startDate,LocalDateTime endDate);
+	void sendBookingSatusNotificationToRenter(String email,String renterName,String status,String lenderName,String equipmentName,LocalDateTime startDate,LocalDateTime endDate,String location);
 }
