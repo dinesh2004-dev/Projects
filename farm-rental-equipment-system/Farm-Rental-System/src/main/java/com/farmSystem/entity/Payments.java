@@ -19,7 +19,7 @@ import lombok.Setter;
 @Entity(name = "payments")
 public class Payments extends Base{
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne
 	@JoinColumn(name = "booking_id",nullable = false)
 	private Bookings booking;
 	

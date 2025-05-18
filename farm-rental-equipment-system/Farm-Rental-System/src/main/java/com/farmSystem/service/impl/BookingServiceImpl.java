@@ -33,6 +33,8 @@ import com.farmSystem.exception.RenterNotFoundException;
 import com.farmSystem.exception.UserNotFoundException;
 import com.farmSystem.service.BookingsService;
 import com.farmSystem.service.EmailService;
+import com.farmSystem.service.RefundService;
+import com.razorpay.RazorpayException;
 
 import jakarta.transaction.Transactional;
 
@@ -56,6 +58,9 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Autowired
 	private EmailService emailService;
+	
+	@Autowired
+	private RefundService refundService;
 	
 	@Autowired
 	private PaymentMapper paymentMapper;
@@ -195,7 +200,8 @@ public class BookingServiceImpl implements BookingsService {
 	@Override
 	@Transactional
 	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException {
-	    Bookings booking = bookingsRepository.findById(bookingId)
+		
+		Bookings booking = bookingsRepository.findById(bookingId)
 	        .orElseThrow(() -> new BookingNotFoundException("Booking not found"));
 
 	    if (booking.getBookingStatus() != BookingStatus.Approved) {
@@ -213,7 +219,9 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Override
 	@Transactional
-	public String deleteBooking(int id) throws BookingNotFoundException, EquipmentNotFoundException {
+	public String deleteBooking(int id) throws BookingNotFoundException, EquipmentNotFoundException, RazorpayException {
+		
+		
 		
 		String emailId = usersUtil.getCurrentUserEmail();
 		
@@ -237,8 +245,15 @@ public class BookingServiceImpl implements BookingsService {
 		
 		bookingsRepository.delete(booking);
 		
+		Payments payment = booking.getPayment();
+		String paymentId = payment.getRazorPayPayMentId();
+		int amount = (int)payment.getAmount() * 100;
 		
-		return "Booking is deleted successfully";
+		refundService.refund(paymentId, amount);
+		
+		paymentsRepository.save(payment);
+		
+		return "Booking is deleted successfully and refund is initiated";
 	}
 
 

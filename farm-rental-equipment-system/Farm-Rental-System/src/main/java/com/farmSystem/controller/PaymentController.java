@@ -16,10 +16,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.farmSystem.Repository.BookingsRepository;
 import com.farmSystem.entity.Bookings;
-import com.farmSystem.entity.Payments;
 import com.farmSystem.enums.PaymentStatus;
 import com.farmSystem.exception.BookingNotFoundException;
 import com.farmSystem.service.BookingsService;
+import com.farmSystem.service.RefundService;
 import com.razorpay.Order;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -34,6 +34,9 @@ public class PaymentController {
 	
 	@Autowired
 	private BookingsRepository bookingsRepository;
+	
+	@Autowired
+	private RefundService refundServiceImpl;
 	
 	@Value("${razorpay.api.key}")
 	private String key;
@@ -101,8 +104,18 @@ public class PaymentController {
             String bookingIdStr = notes.getString("bookingId");
 
             int bookingId = Integer.parseInt(bookingIdStr);
-            bookingService.confirmBookingAfterPayment(bookingId,razorpayOrderId,razorpayPaymentId);
-            
+            try {
+            	bookingService.confirmBookingAfterPayment(bookingId,razorpayOrderId,razorpayPaymentId);
+            }
+            catch(Exception e){
+            	e.printStackTrace();
+            	
+            	int amount = order.get("amount");
+            	
+            	refundServiceImpl.instantRefund(razorpayPaymentId,amount);
+            	
+            	return new RedirectView("/failure.html");
+            }
            
         	
         	RedirectView redirectView = new RedirectView("/success.html?orderId=" + razorpayOrderId);

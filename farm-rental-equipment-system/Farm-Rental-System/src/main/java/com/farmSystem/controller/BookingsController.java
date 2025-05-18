@@ -21,6 +21,7 @@ import com.farmSystem.exception.LenderNotFoundException;
 import com.farmSystem.exception.RenterNotFoundException;
 import com.farmSystem.exception.UserNotFoundException;
 import com.farmSystem.service.BookingsService;
+import com.razorpay.RazorpayException;
 
 @Validated
 @RequestMapping("/booking")
@@ -60,13 +61,14 @@ public class BookingsController {
 	}
 	
 	@DeleteMapping("/{bookingId}")
-	public ResponseEntity<String> deleteBooking(@PathVariable int bookingId) throws BookingNotFoundException, EquipmentNotFoundException{
+	public ResponseEntity<String> deleteBooking(@PathVariable int bookingId) throws BookingNotFoundException, EquipmentNotFoundException, RazorpayException{
 		
 		String response = bookingService.deleteBooking(bookingId);
 		
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 		
 	}
+	
 	
 
 }

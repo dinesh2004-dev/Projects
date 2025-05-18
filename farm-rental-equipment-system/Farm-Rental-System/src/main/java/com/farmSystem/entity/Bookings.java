@@ -73,7 +73,5 @@ public class Bookings extends Base {
 	 private Payments payment;
 	 
 
-	
-	 
 
 }

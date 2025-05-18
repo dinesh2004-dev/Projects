@@ -9,6 +9,7 @@ import com.farmSystem.exception.EquipmentNotFoundException;
 import com.farmSystem.exception.LenderNotFoundException;
 import com.farmSystem.exception.RenterNotFoundException;
 import com.farmSystem.exception.UserNotFoundException;
+import com.razorpay.RazorpayException;
 
 public interface BookingsService {
 	
@@ -20,5 +21,5 @@ public interface BookingsService {
 	
 	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException;
 	
-	String deleteBooking(int id)throws BookingNotFoundException,EquipmentNotFoundException;
+	String deleteBooking(int id)throws BookingNotFoundException,EquipmentNotFoundException,RazorpayException;
 }
