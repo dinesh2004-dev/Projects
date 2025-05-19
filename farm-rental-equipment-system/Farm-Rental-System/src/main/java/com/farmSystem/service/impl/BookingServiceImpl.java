@@ -84,84 +84,85 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Transactional
 	@Override
-	public String  book(BookingsRequestDTO  bookingsRequestDTO) throws UserNotFoundException,EquipmentNotFoundException, RenterNotFoundException, LenderNotFoundException {
-		
-		String emailId = usersUtil.getCurrentUserEmail();
-		
-		
-		User renter = userRepository.findByEmailId(emailId)
-									.orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id"+emailId));
-		
-		if(!renter.getEmailId().equals(emailId)) {
-			
-			return "Not Autorized To Book";
-		}
-		
-		if(renter.getRole() != Role.Renter) {
-			
-			throw new AccessDeniedException("Only Renters Can Book!");
-		}
-		Equipment equipment = equipmentRepository.findByIdForUpdate(bookingsRequestDTO.getEquipmentId())
-			    .orElseThrow(() -> new EquipmentNotFoundException(String.format(equipmentNotFound, bookingsRequestDTO.getEquipmentId())));
+	public String book(BookingsRequestDTO bookingsRequestDTO) throws UserNotFoundException, EquipmentNotFoundException, RenterNotFoundException, LenderNotFoundException {
 
-		
-		if (equipment.getOwner() == null) {
-			throw new LenderNotFoundException("Equipment has no owner assigned.");
-		}
-		
-		
-		
-		if (equipment.getAvailability() == Availability.Unavailable) {
+	    String emailId = usersUtil.getCurrentUserEmail();
 
-			
-				return "Equipment Is Not Available";
-		}
-		
-		
-		User lender = userRepository.findById(equipment.getOwner().getId())
-									.orElseThrow(() -> new LenderNotFoundException(String.format(lenderNotFound,equipment.getOwner().getId())));
-		
-		List<Bookings> overlaps = bookingsRepository.findOverlappingBookings(equipment, bookingsRequestDTO.getStartDate(), bookingsRequestDTO.getEndDate());
-		if (!overlaps.isEmpty()) {
-		    return "Equipment already booked during selected dates.";
-		}
-		
-		boolean alreadyBooked = bookingsRepository.existsByRenterAndEquipment(renter,equipment);
-		
-		if(alreadyBooked) {
-			return "Equipment with id :"+equipment.getId()+" Already Booked its under pending";
-		}
-		
-		
-//		if(equipment.getAvailability() == Availability.Booked || equipment.getAvailability() == Availability.Unavailable) {
-//			
-//			return (equipment.getAvailability() == Availability.Booked) ? "Booked By Other Customer" : "Equipment Is Not Available";
-//		}
-		
-		
-		Bookings booking = new Bookings();
-		booking.setEquipment(equipment);
-		booking.setRenter(renter);
-		booking.setLender(lender);
-		booking.setStart_date(bookingsRequestDTO.getStartDate());
-		booking.setEnd_date(bookingsRequestDTO.getEndDate());
-		booking.setBookingStatus(BookingStatus.Pending);
-		booking.setPaymentStatus(PaymentStatus.PENDING);
-		booking.setTotalCost(equipment.getRentalRate());
-		
-		equipment.setAvailability(Availability.Booked);
-		equipmentRepository.save(equipment);
-		
-		bookingsRepository.save(booking);
-		
-		emailService.sendBookingRequestToLender(booking.getLender().getEmailId(),booking.getLender().getFullName(),booking.getRenter().getFullName(),booking.getEquipment().getName(),
-				booking.getStart_date(),booking.getEnd_date(),booking.getRenter().getAddress());
-		
-		return String.format("Request Sent To Lender with id : %s",booking.getLender().getId());
-		
-		
+	    User renter = userRepository.findByEmailId(emailId)
+	            .orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id " + emailId));
+
+	    if (renter.getRole() != Role.Renter) {
+	        throw new AccessDeniedException("Only Renters Can Book!");
+	    }
+
+	    Equipment equipment = equipmentRepository.findByIdForUpdate(bookingsRequestDTO.getEquipmentId())
+	            .orElseThrow(() -> new EquipmentNotFoundException(String.format(equipmentNotFound, bookingsRequestDTO.getEquipmentId())));
+
+	    if (equipment.getOwner() == null) {
+	        throw new LenderNotFoundException("Equipment has no owner assigned.");
+	    }
+
+	    if (equipment.getAvailability() == Availability.Unavailable) {
+	        return "Equipment Is Not Available";
+	    }
+
+	    boolean overlapExists = bookingsRepository.existsOverlappingBookings(
+	        equipment, bookingsRequestDTO.getStartDate(), bookingsRequestDTO.getEndDate()
+	    );
+	    if (overlapExists) {
+	        return "Equipment already booked during selected dates.";
+	    }
+	    
+	    
+
+	    boolean alreadyBooked = checkIfIncompleteBookingsExist(renter,equipment);
+	    if (alreadyBooked) {
+	        return "Equipment with id :" + equipment.getId() + " Already Booked and is pending.";
+	    }
+
+	    User lender = userRepository.findById(equipment.getOwner().getId())
+	            .orElseThrow(() -> new LenderNotFoundException(String.format(lenderNotFound, equipment.getOwner().getId())));
+
+	    Bookings booking = new Bookings();
+	    booking.setEquipment(equipment);
+	    booking.setRenter(renter);
+	    booking.setLender(lender);
+	    booking.setStart_date(bookingsRequestDTO.getStartDate());
+	    booking.setEnd_date(bookingsRequestDTO.getEndDate());
+	    booking.setBookingStatus(BookingStatus.Pending);
+	    booking.setPaymentStatus(PaymentStatus.PENDING);
+	    booking.setTotalCost(equipment.getRentalRate());
+
+	    equipment.setAvailability(Availability.Booked);
+	    equipmentRepository.save(equipment);
+	    bookingsRepository.save(booking);
+
+	    // Async Email
+	    emailService.sendBookingRequestToLender(
+	        lender.getEmailId(),
+	        lender.getFullName(),
+	        renter.getFullName(),
+	        equipment.getName(),
+	        booking.getStart_date(),
+	        booking.getEnd_date(),
+	        renter.getAddress()
+	    );
+
+	    return String.format("Request Sent To Lender with id : %s", lender.getId());
 	}
 	
+	
+	@Override
+    public boolean checkIfIncompleteBookingsExist(User renter, Equipment equipment) {
+        List<BookingStatus> statuses = List.of(
+            BookingStatus.Pending,
+            BookingStatus.Approved
+            
+        );
+
+        return bookingsRepository.existsByRenterAndEquipmentWithStatusIn(renter, equipment, statuses);
+    }
+
 	@Override
 	public String getBookingStatus(int id) throws BookingNotFoundException{
 		

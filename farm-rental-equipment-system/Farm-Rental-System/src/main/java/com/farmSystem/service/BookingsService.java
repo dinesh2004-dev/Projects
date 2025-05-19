@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.farmSystem.DTO.BookingsDTO;
 import com.farmSystem.DTO.BookingsRequestDTO;
+import com.farmSystem.entity.Equipment;
+import com.farmSystem.entity.User;
 import com.farmSystem.exception.BookingNotFoundException;
 import com.farmSystem.exception.EquipmentNotFoundException;
 import com.farmSystem.exception.LenderNotFoundException;
@@ -22,4 +24,6 @@ public interface BookingsService {
 	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException;
 	
 	String cancelBooking(int id)throws BookingNotFoundException,EquipmentNotFoundException,RazorpayException;
+	
+	boolean checkIfIncompleteBookingsExist(User renter, Equipment equipment); 
 }
