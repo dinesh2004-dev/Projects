@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import com.farmSystem.service.RefundService;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import com.razorpay.Refund;
 
 @Service
 public class RefundServiceImpl implements RefundService {
@@ -31,15 +32,22 @@ public class RefundServiceImpl implements RefundService {
 	}
 	
 	@Override
-	public void refund(String paymentId,int amount) throws RazorpayException {
+	public String refund(String paymentId,int amount) throws RazorpayException {
 
 		JSONObject refundRequest = new JSONObject();
 		refundRequest.put("amount",amount);
 		refundRequest.put("speed","normal");
-		
+		System.out.println("**********IN REFUNF1*************");
 		RazorpayClient razorpayClient = new RazorpayClient(key,secret);
+		System.out.println("**********IN REFUNF2*************");
 		
-		razorpayClient.payments.refund(paymentId, refundRequest);              
+		Refund refund =razorpayClient.payments.refund(paymentId, refundRequest);
+		
+		System.out.println("**********IN REFUNF3*************");
+		
+		String refundId = refund.get("id");
+		
+		return refundId;
 
 	}
 

@@ -219,7 +219,7 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Override
 	@Transactional
-	public String deleteBooking(int id) throws BookingNotFoundException, EquipmentNotFoundException, RazorpayException {
+	public String cancelBooking(int id) throws BookingNotFoundException, EquipmentNotFoundException, RazorpayException {
 		
 		
 		
@@ -243,15 +243,19 @@ public class BookingServiceImpl implements BookingsService {
 		
 		equipmentRepository.save(equipment);
 		
-		bookingsRepository.delete(booking);
-		
 		Payments payment = booking.getPayment();
 		String paymentId = payment.getRazorPayPayMentId();
 		int amount = (int)payment.getAmount() * 100;
 		
-		refundService.refund(paymentId, amount);
-		
+		String refundId = refundService.refund(paymentId, amount);
+		payment.setRazorPayRefundId(refundId);
 		paymentsRepository.save(payment);
+		
+		booking.setBookingStatus(BookingStatus.Cancelled);
+		booking.setPaymentStatus(PaymentStatus.REFUNDED);
+		
+		bookingsRepository.save(booking);
+		
 		
 		return "Booking is deleted successfully and refund is initiated";
 	}

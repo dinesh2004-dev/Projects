@@ -21,5 +21,5 @@ public interface BookingsService {
 	
 	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException;
 	
-	String deleteBooking(int id)throws BookingNotFoundException,EquipmentNotFoundException,RazorpayException;
+	String cancelBooking(int id)throws BookingNotFoundException,EquipmentNotFoundException,RazorpayException;
 }
