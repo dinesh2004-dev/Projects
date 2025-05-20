@@ -167,12 +167,12 @@ public class BookingServiceImpl implements BookingsService {
 	public String getBookingStatus(int id) throws BookingNotFoundException{
 		
 		 
-		String renterUsername = usersUtil.getCurrentUserEmail();
+		String emailId = usersUtil.getCurrentUserEmail();
 		
 		Bookings booking = bookingsRepository.findById(id)
 											 .orElseThrow(() -> new BookingNotFoundException(String.format(NoBookingFound,id)));
 		
-		if (!booking.getRenter().getEmailId().equals(renterUsername)) {
+		if (!booking.getRenter().getEmailId().equals(emailId)) {
 	        return "Not authorized to view booking status";
 	    }
 		
@@ -183,10 +183,10 @@ public class BookingServiceImpl implements BookingsService {
 	@Override
 	public List<BookingsDTO> getAllBookings() throws RenterNotFoundException, BookingNotFoundException{
 		
-		String renterUsername = usersUtil.getCurrentUserEmail();
+		String renterEmailId = usersUtil.getCurrentUserEmail();
 
-	    User renter = userRepository.findByEmailId(renterUsername)
-	    							.orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id"+renterUsername));
+	    User renter = userRepository.findByEmailId(renterEmailId)
+	    							.orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id"+renterEmailId));
 	    
 	    List<Bookings> bookingsList = bookingsRepository.findAllByRenter(renter);
 	    
@@ -216,6 +216,8 @@ public class BookingServiceImpl implements BookingsService {
 	    Payments payment = paymentMapper.toPayments(booking,razorpayOrderId,razorpayPaymentId);
 	    
 	    paymentsRepository.save(payment);
+	    
+	    
 	}
 	
 	@Override

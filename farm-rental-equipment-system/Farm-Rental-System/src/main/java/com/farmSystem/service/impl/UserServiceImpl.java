@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.farmSystem.DTO.UserDTO;
+import com.farmSystem.Integration.GoogleMapsIntegration;
 import com.farmSystem.Repository.UserRepository;
 import com.farmSystem.Util.UserMapper;
 import com.farmSystem.entity.User;
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService{
 	@Autowired
 	private  UserMapper userMapper;
 	@Autowired
-	private  GoogleMapsService googleMapsService;
+	private  GoogleMapsIntegration googleMapsService;
 	@Autowired
 	@Lazy
 	private PasswordEncoder passwordEncoder;
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService{
 	
 	public int saveUser(UserDTO userDTO){
 		
-		GoogleMapsService.Coordinates coords = googleMapsService.getCoordinatesFromAddress(userDTO.getAddress());
+		GoogleMapsIntegration.Coordinates coords = googleMapsService.getCoordinatesFromAddress(userDTO.getAddress());
 		
 		userDTO.setLatitude(coords.latitude);
 		

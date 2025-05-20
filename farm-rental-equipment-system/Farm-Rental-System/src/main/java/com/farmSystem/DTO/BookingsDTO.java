@@ -14,7 +14,7 @@ import lombok.Setter;
 @Setter
 public class BookingsDTO {
 	
-	
+	private int id;
 	private EquipmentDTO equipmentDTO;
 	
 	

@@ -1,4 +1,4 @@
-package com.farmSystem.service.impl;
+package com.farmSystem.Integration;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public class GoogleMapsService {
+public class GoogleMapsIntegration {
 	
 	@Value("${google.maps.key}")
 	private String API_KEY;

@@ -1,19 +1,27 @@
 package com.farmSystem.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import com.farmSystem.DTO.BookingsDTO;
 import com.farmSystem.Util.DateFormatUtil;
 import com.farmSystem.service.EmailService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.transaction.Transactional;
 
 @Service
 public class EmailServiceImpl implements EmailService {
@@ -118,6 +126,26 @@ public class EmailServiceImpl implements EmailService {
 		sendMessage(email,html,"Updated Booking Status");
 		
 		
+	}
+	
+	@Override
+	public void sendBookingConfirmed(BookingsDTO booking) {
+		RestTemplate restTemplate = new RestTemplate();
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("renterEmail", booking.getRenterDTO().getEmailId());
+		payload.put("renterName", booking.getRenterDTO().getFullName());
+		payload.put("equipmentName", booking.getEquipmentDTO().getName());
+		payload.put("startDate", booking.getStart_date().toString());
+		payload.put("endDate", booking.getEnd_date().toString());
+
+		HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
+
+		String webhookUrl = "http://localhost:5678/webhook/send-booking-email";
+		restTemplate.postForEntity(webhookUrl, request, String.class);
 	}
 
 }

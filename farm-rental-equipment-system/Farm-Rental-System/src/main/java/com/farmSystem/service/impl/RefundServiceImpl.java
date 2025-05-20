@@ -37,13 +37,10 @@ public class RefundServiceImpl implements RefundService {
 		JSONObject refundRequest = new JSONObject();
 		refundRequest.put("amount",amount);
 		refundRequest.put("speed","normal");
-		System.out.println("**********IN REFUNF1*************");
+		
 		RazorpayClient razorpayClient = new RazorpayClient(key,secret);
-		System.out.println("**********IN REFUNF2*************");
 		
 		Refund refund =razorpayClient.payments.refund(paymentId, refundRequest);
-		
-		System.out.println("**********IN REFUNF3*************");
 		
 		String refundId = refund.get("id");
 		
