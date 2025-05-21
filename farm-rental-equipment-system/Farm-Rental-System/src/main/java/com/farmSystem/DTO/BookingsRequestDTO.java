@@ -13,4 +13,10 @@ public class BookingsRequestDTO {
 	private LocalDateTime startDate;
 	
 	private LocalDateTime endDate;
+	
+	private String deliveryAddress;
+	
+	private boolean deliveryRequired;
+	
+	
 }

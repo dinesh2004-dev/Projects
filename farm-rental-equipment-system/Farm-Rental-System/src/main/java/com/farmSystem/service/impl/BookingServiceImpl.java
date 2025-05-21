@@ -11,19 +11,25 @@ import org.springframework.stereotype.Service;
 
 import com.farmSystem.DTO.BookingsDTO;
 import com.farmSystem.DTO.BookingsRequestDTO;
+import com.farmSystem.DTO.Coordinates;
 import com.farmSystem.Repository.BookingsRepository;
+import com.farmSystem.Repository.DeliveryRepository;
 import com.farmSystem.Repository.EquipmentRepository;
 import com.farmSystem.Repository.PaymentsRepository;
 import com.farmSystem.Repository.UserRepository;
 import com.farmSystem.Util.BookingsMapper;
+import com.farmSystem.Util.DeliveryMapper;
+import com.farmSystem.Util.GoogleMapsUtil;
 import com.farmSystem.Util.PaymentMapper;
 import com.farmSystem.Util.UsersUtil;
 import com.farmSystem.entity.Bookings;
+import com.farmSystem.entity.Delivery;
 import com.farmSystem.entity.Equipment;
 import com.farmSystem.entity.Payments;
 import com.farmSystem.entity.User;
 import com.farmSystem.enums.Availability;
 import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.enums.DeliveryStatus;
 import com.farmSystem.enums.PaymentStatus;
 import com.farmSystem.enums.Role;
 import com.farmSystem.exception.BookingNotFoundException;
@@ -43,31 +49,29 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Autowired
 	private BookingsRepository bookingsRepository;
-	
 	@Autowired
 	private EquipmentRepository equipmentRepository;
-	
 	@Autowired
 	private UsersUtil usersUtil;
-	
 	@Autowired
 	private UserRepository userRepository;
-	
 	@Autowired
 	private PaymentsRepository paymentsRepository;
-	
 	@Autowired
 	private EmailService emailService;
-	
 	@Autowired
 	private RefundService refundService;
-	
 	@Autowired
 	private PaymentMapper paymentMapper;
-	
-	
 	@Autowired
 	private BookingsMapper bookingsMapper;
+	@Autowired
+	private DeliveryRepository deliveryRepository;
+	@Autowired
+	private GoogleMapsUtil googleMapsUtil;
+	@Autowired
+	private DeliveryMapper deliveryMapper;
+	
 	
 	
 	@Value("${equipment.not.found}")
@@ -87,6 +91,8 @@ public class BookingServiceImpl implements BookingsService {
 	public String book(BookingsRequestDTO bookingsRequestDTO) throws UserNotFoundException, EquipmentNotFoundException, RenterNotFoundException, LenderNotFoundException {
 
 	    String emailId = usersUtil.getCurrentUserEmail();
+	    Coordinates coords = googleMapsUtil.getCoordinates(bookingsRequestDTO.getDeliveryAddress());
+	    
 
 	    User renter = userRepository.findByEmailId(emailId)
 	            .orElseThrow(() -> new RenterNotFoundException("Renter Not Found with Email Id " + emailId));
@@ -123,20 +129,15 @@ public class BookingServiceImpl implements BookingsService {
 	    User lender = userRepository.findById(equipment.getOwner().getId())
 	            .orElseThrow(() -> new LenderNotFoundException(String.format(lenderNotFound, equipment.getOwner().getId())));
 
-	    Bookings booking = new Bookings();
-	    booking.setEquipment(equipment);
-	    booking.setRenter(renter);
-	    booking.setLender(lender);
-	    booking.setStart_date(bookingsRequestDTO.getStartDate());
-	    booking.setEnd_date(bookingsRequestDTO.getEndDate());
-	    booking.setBookingStatus(BookingStatus.Pending);
-	    booking.setPaymentStatus(PaymentStatus.PENDING);
-	    booking.setTotalCost(equipment.getRentalRate());
+	    
+	    Bookings booking = bookingsMapper.toBooking(bookingsRequestDTO, equipment, renter, lender);
 
 	    equipment.setAvailability(Availability.Booked);
 	    equipmentRepository.save(equipment);
 	    bookingsRepository.save(booking);
-
+	    
+	    Delivery delivery = deliveryMapper.toDelivery(bookingsRequestDTO, coords, booking);
+	    deliveryRepository.save(delivery);
 	    // Async Email
 	    emailService.sendBookingRequestToLender(
 	        lender.getEmailId(),
@@ -214,9 +215,11 @@ public class BookingServiceImpl implements BookingsService {
 	    bookingsRepository.save(booking);
 	    
 	    Payments payment = paymentMapper.toPayments(booking,razorpayOrderId,razorpayPaymentId);
-	    
+	  
 	    paymentsRepository.save(payment);
 	    
+	    Delivery delivery = booking.getDelivery();
+	    delivery.setStatus(DeliveryStatus.SCHEDULED);
 	    
 	}
 	

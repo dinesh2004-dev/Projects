@@ -3,6 +3,7 @@ package com.farmSystem.entity;
 import java.time.LocalDateTime;
 
 import com.farmSystem.enums.BookingStatus;
+import com.farmSystem.enums.DeliveryStatus;
 import com.farmSystem.enums.PaymentStatus;
 
 import jakarta.persistence.CascadeType;
@@ -15,6 +16,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -65,6 +67,8 @@ public class Bookings extends Base {
 	@Column(nullable = false)
 	private double totalCost;
 	
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	 @Column(insertable = false, updatable = false, 
 	            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createdAt;
@@ -72,6 +76,7 @@ public class Bookings extends Base {
 	 @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	 private Payments payment;
 	 
-
+	 @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	 private Delivery delivery;
 
 }

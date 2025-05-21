@@ -19,6 +19,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -53,6 +54,8 @@ public class User extends Base implements UserDetails{
 	private Role role;
 	@Column(name = "Address",nullable = false)
 	private String address;
+	@Getter(AccessLevel.NONE)
+	@Setter(AccessLevel.NONE)
 	 @Column(insertable = false, updatable = false, 
 	            columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createdAt;
