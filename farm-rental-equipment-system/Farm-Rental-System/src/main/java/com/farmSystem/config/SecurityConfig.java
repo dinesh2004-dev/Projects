@@ -34,7 +34,10 @@ public class SecurityConfig {
 		http
 		.csrf(csrf -> csrf.disable())
 		.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST,"/user").permitAll()
-				.requestMatchers("/authenticate","/api/payment/payment-callback","/index.html","/success.html","/failure.html").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/delivery/*/location").permitAll()
+				.requestMatchers(HttpMethod.POST, "/api/delivery/*/location").permitAll()
+				.requestMatchers("/track").permitAll()
+				.requestMatchers("/Track.html","/GetMap.html","/LiveLocation.html","/authenticate","/api/payment/payment-callback","/index.html","/success.html","/failure.html").permitAll()
 				.anyRequest()
 				.authenticated());
 		http.addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);

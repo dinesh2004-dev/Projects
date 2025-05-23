@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Live Equipment Tracker</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #map {
+      height: 90vh;
+      width: 100%;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+    #error {
+      background: #f44336;
+      color: white;
+      padding: 10px;
+      display: none;
+    }
+  </style>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCcfrXvFSYVJ8nBzEJ52hm558OS8fA8jqk&libraries=marker"></script>
+</head>
+<body>
+
+<h2 style="padding: 10px;">🚜 Live Equipment Tracker</h2>
+<div id="error"></div>
+<div id="map"></div>
+
+<script>
+  const deliveryId = 1; // Change this to dynamic ID if needed
+  const apiUrl = `http://localhost:8080/api/delivery/${deliveryId}/location`;
+
+  let map;
+  let marker;
+
+  function showError(message) {
+    const errorBox = document.getElementById("error");
+    errorBox.style.display = "block";
+    errorBox.textContent = message;
+  }
+
+  function initMap(lat, lng) {
+    const position = { lat: lat, lng: lng };
+
+    map = new google.maps.Map(document.getElementById("map"), {
+      center: position,
+      zoom: 15,
+      mapId: 'a2c2593f6b224627ab840145', // Use the actual Map ID from Google Cloud
+    });
+
+    marker = new google.maps.marker.AdvancedMarkerElement({
+      map: map,
+      position: position,
+      title: "Equipment Location",
+    });
+  }
+
+  function updateMarker(lat, lng) {
+    const newPosition = { lat: lat, lng: lng };
+    marker.position = newPosition;
+    map.panTo(newPosition);
+  }
+
+  function fetchLocationAndUpdate() {
+    fetch(apiUrl)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        const { latitude, longitude } = data;
+
+        if (latitude == null || longitude == null) {
+          showError("Invalid location data from server.");
+          return;
+        }
+
+        if (!map || !marker) {
+          initMap(latitude, longitude);
+        } else {
+          updateMarker(latitude, longitude);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching location:", error);
+        showError("❌ Unable to fetch location. Check backend/CORS.");
+      });
+  }
+
+  fetchLocationAndUpdate();
+  setInterval(fetchLocationAndUpdate, 10000); // Poll every 10 seconds
+</script>
+
+</body>
+</html>

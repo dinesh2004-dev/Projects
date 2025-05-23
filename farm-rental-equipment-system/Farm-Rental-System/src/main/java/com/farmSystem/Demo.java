@@ -22,6 +22,7 @@ public class Demo implements WebMvcConfigurer,CommandLineRunner{
 	public void addCorsMappings(CorsRegistry registry) {
 		
 		registry.addMapping("/**");
+				
 	}
 	
 	@Override

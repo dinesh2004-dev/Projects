@@ -1,15 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Start Delivery Tracking</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Delivery Tracking</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #status {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-left: 5px solid #2196f3;
+      font-size: 1rem;
+    }
+  </style>
 </head>
 <body>
 
-<h2>Delivery Tracker</h2>
-<p id="status">Waiting for location...</p>
+<h2>📦 Live Delivery Tracker</h2>
+<p>Tracking your GPS coordinates every few seconds...</p>
+<div id="status">Initializing location tracking...</div>
 
 <script>
-  const deliveryId = 123; // Replace with actual delivery ID
+  const deliveryId = 1; // Replace with actual delivery ID
   const updateUrl = `http://localhost:8080/api/delivery/${deliveryId}/location`;
 
   function sendLocation(lat, lng) {
@@ -24,34 +40,64 @@
       })
     }).then(res => {
       if (res.ok) {
-        console.log("Location updated");
+        console.log("✅ Location sent:", lat, lng);
+      } else {
+        console.warn("❌ Backend error while sending location");
       }
     }).catch(err => {
-      console.error("Error sending location:", err);
+      console.error("❌ Network error while sending location:", err);
     });
+  }
+
+  function updateStatus(message, isError = false) {
+    const statusBox = document.getElementById("status");
+    statusBox.innerText = message;
+    statusBox.style.borderLeftColor = isError ? "#f44336" : "#2196f3";
   }
 
   function startTracking() {
     if ("geolocation" in navigator) {
-      navigator.geolocation.watchPosition(position => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        document.getElementById("status").innerText = `Lat: ${lat}, Lng: ${lng}`;
-        sendLocation(lat, lng);
-      }, error => {
-        console.error("GPS Error:", error);
-      }, {
-        enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000
-      });
+      updateStatus("🔍 Getting location...");
+
+      navigator.geolocation.watchPosition(
+        position => {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+
+          updateStatus(`📍 Latitude: ${lat.toFixed(6)}, Longitude: ${lng.toFixed(6)}`);
+          sendLocation(lat, lng);
+        },
+        error => {
+          let message = "";
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              message = "❌ Permission denied. Please allow location access.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              message = "❌ Location unavailable. Try moving to an open area.";
+              break;
+            case error.TIMEOUT:
+              message = "⏱️ Request timed out. Trying again...";
+              break;
+            default:
+              message = "❌ Unknown error occurred.";
+              break;
+          }
+          updateStatus(message, true);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 30000,
+          maximumAge: 0
+        }
+      );
     } else {
-      alert("Geolocation not supported.");
+      updateStatus("❌ Geolocation is not supported by this browser.", true);
     }
   }
 
-  // Start tracking immediately
-  startTracking();
+  // Start tracking when page loads
+  window.onload = startTracking;
 </script>
 
 </body>
