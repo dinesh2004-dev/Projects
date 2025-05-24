@@ -215,11 +215,15 @@ public class BookingServiceImpl implements BookingsService {
 	    bookingsRepository.save(booking);
 	    
 	    Payments payment = paymentMapper.toPayments(booking,razorpayOrderId,razorpayPaymentId);
+	    
+//	    System.out.println("Mapped Payment ID: " + payment.getId());
 	  
 	    paymentsRepository.save(payment);
 	    
 	    Delivery delivery = booking.getDelivery();
 	    delivery.setStatus(DeliveryStatus.SCHEDULED);
+	    deliveryRepository.save(delivery);
+	    
 	    
 	}
 	

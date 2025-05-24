@@ -32,17 +32,35 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-		.csrf(csrf -> csrf.disable())
-		.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST,"/user").permitAll()
+			.csrf(csrf -> csrf.disable())
+			.authorizeHttpRequests(auth -> auth
+				.requestMatchers(HttpMethod.POST, "/user").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/delivery/*/location").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/delivery/*/location").permitAll()
 				.requestMatchers("/track").permitAll()
-				.requestMatchers("/Track.html","/GetMap.html","/LiveLocation.html","/authenticate","/api/payment/payment-callback","/index.html","/success.html","/failure.html").permitAll()
-				.anyRequest()
-				.authenticated());
-		http.addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
+
+				// ✅ Allow all Swagger-related paths
+				.requestMatchers(
+					"/swagger-ui/**",           // CSS/JS/UI
+					"/v3/api-docs/**",          // OpenAPI JSON
+					"/swagger-ui.html",         // Redirect to index.html
+					"/documentation/swagger-config"  // Fix for your specific 403
+				).permitAll()
+
+				// ✅ Static & custom resources
+				.requestMatchers("/css/**", "/js/**", "/html/**", "/images/**").permitAll()
+				.requestMatchers(
+					"/swagger.html", "/documentation", "/Track.html", "/GetMap.html",
+					"/LiveLocation.html", "/authenticate", "/api/payment/payment-callback",
+					"/index.html", "/success.html", "/failure.html","/api/payment/create-order"
+				).permitAll()
+
+				.anyRequest().authenticated()
+			);
+		http.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return http.build();
 	}
+
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {

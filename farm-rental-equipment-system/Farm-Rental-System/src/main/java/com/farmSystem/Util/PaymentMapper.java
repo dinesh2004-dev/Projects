@@ -9,6 +9,8 @@ import com.farmSystem.entity.Payments;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PaymentMapper {
+		
+	 	@Mapping(target = "id", ignore = true)
 	 	@Mapping(target = "booking", source = "booking")
 	    @Mapping(target = "amount", source = "booking.totalCost")
 	    @Mapping(target = "paymentStatus", source = "booking.paymentStatus")
@@ -16,4 +18,6 @@ public interface PaymentMapper {
 	    @Mapping(target = "razorPayPayMentId", source = "razorpayPaymentId")
 	    @Mapping(target = "payoutStatus", constant = "false")
 	    Payments toPayments(Bookings booking, String razorpayOrderId, String razorpayPaymentId);
+	 	
+
 }
