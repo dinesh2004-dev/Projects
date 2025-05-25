@@ -2,7 +2,7 @@ HELP.md
 src/main/resources/application.properties
 src/main/resources/concurrent_test.py
 src/main/resources/dataset.py
-src/main/resources/messages.properties
+###src/main/resources/messages.properties
 src/main/resources/config.properties
 
 .env
