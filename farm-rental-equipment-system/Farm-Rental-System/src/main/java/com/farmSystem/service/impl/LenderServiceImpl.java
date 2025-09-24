@@ -5,6 +5,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,7 @@ public class LenderServiceImpl implements LenderService {
 	private String bookingNotfound;
 
 	@Override
+	@CachePut(value = "bookingStatus", key = "#id")
 	public String updateBookingStatus(int id, BookingStatus status) throws BookingNotFoundException, EquipmentNotFoundException {
 		
 		String lenderEmail = usersUtil.getCurrentUserEmail();
@@ -105,6 +108,8 @@ public class LenderServiceImpl implements LenderService {
 	}
 	
 	@Override
+	@Cacheable(value = "getRequestBookings",
+		key = "T(org.springframework.security.core.context.SecurityContextHolder).getContext().getAuthentication().getName()")
 	public List<BookingsDTO> getAllRequestBookings(){
 		
 		String lenderUsername = SecurityContextHolder.getContext().getAuthentication().getName();

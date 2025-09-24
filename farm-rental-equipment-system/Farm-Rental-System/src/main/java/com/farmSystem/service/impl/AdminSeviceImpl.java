@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import com.farmSystem.DTO.UserDTO;
@@ -24,7 +25,8 @@ public class AdminSeviceImpl implements AdminService{
 	
 	@Value("${user.not.found}")
 	private String userNotFound;
-	
+
+	@Cacheable(value = "user", key = "#UserId")
 	@Override
 	public UserDTO findUserById(int id) throws UserNotFoundException {
 		
@@ -34,6 +36,7 @@ public class AdminSeviceImpl implements AdminService{
 	}
 	
 	@Override
+	@Cacheable(value = "usersList")
 	public List<UserDTO> findAllUsers(){
 		
 		List<User> usersList = adminRepository.findAllUsers();

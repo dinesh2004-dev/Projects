@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -54,11 +55,13 @@ public class EquipmentServiceImpl implements EquipmentService {
 	}
 	
 	@Override
+	@Cacheable(value = "searchEquipment",key = "#searchEquipmentDTO")
 	public List<EquipmentDTO> searchEquipment(SearchEquipmentDTO searchEquipmentDTO){
 		
 		return equipmentRepository.serchEquipment(searchEquipmentDTO);
 	}
-	
+
+	@Cacheable(value = "getEquipments")
 	@Override
 	public List<EquipmentDTO> findAllEquipments(){
 		

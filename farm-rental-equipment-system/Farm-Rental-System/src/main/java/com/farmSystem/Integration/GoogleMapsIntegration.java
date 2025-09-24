@@ -38,22 +38,15 @@ public class GoogleMapsIntegration {
 		
 		JSONArray result = jsonObject.getJSONArray("results");
 		
-		if(result.length() > 0) {
-			
-			JSONObject location = result.getJSONObject(0)
-										.getJSONObject("geometry")
-										.getJSONObject("location");
-			
-			double lat = location.getDouble("lat");
-			
-			double lng = location.getDouble("lng");
-			
-			String formattedAddress = result.getJSONObject(0).getString("formatted_address");
-			
-			return new Coordinates(lat,lng,formattedAddress);
-		}
-		else {
-            throw new RuntimeException("Invalid address: Unable to geocode");
+		if (result.length() > 0) {
+            JSONObject location = result.getJSONObject(0)
+                                       .getJSONObject("geometry")
+                                       .getJSONObject("location");
+            double latitude = location.getDouble("lat");
+            double longitude = location.getDouble("lng");
+            return new Coordinates(latitude, longitude, address);
+        } else {
+            throw new IllegalArgumentException("No results found for the given address: " + address);
         }
 	}
 	

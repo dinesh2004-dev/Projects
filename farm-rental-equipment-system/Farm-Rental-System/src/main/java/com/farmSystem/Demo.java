@@ -3,10 +3,12 @@ package com.farmSystem;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+@EnableCaching
 @SpringBootApplication
 @PropertySource("classpath:messages.properties")
 @PropertySource("classpath:config.properties")

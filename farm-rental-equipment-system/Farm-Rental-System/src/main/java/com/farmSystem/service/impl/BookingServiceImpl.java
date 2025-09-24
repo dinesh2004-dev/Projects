@@ -6,6 +6,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
@@ -165,6 +168,7 @@ public class BookingServiceImpl implements BookingsService {
     }
 
 	@Override
+	@Cacheable(value = "bookingStatus", key = "#bookingId")
 	public String getBookingStatus(int id) throws BookingNotFoundException{
 		
 		 
@@ -182,6 +186,7 @@ public class BookingServiceImpl implements BookingsService {
 	}
 	
 	@Override
+	@Cacheable(value = "getBookings", key = "#getBookings")
 	public List<BookingsDTO> getAllBookings() throws RenterNotFoundException, BookingNotFoundException{
 		
 		String renterEmailId = usersUtil.getCurrentUserEmail();
@@ -201,6 +206,7 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Override
 	@Transactional
+	@CachePut(value = "bookingStatus", key = "#bookingId")
 	public void confirmBookingAfterPayment(int bookingId,String razorpayOrderId,String razorpayPaymentId) throws BookingNotFoundException {
 		
 		Bookings booking = bookingsRepository.findById(bookingId)
@@ -229,6 +235,7 @@ public class BookingServiceImpl implements BookingsService {
 	
 	@Override
 	@Transactional
+	@CachePut(value = "bookingStatus", key = "#bookingId")
 	public String cancelBooking(int id) throws BookingNotFoundException, EquipmentNotFoundException, RazorpayException {
 		
 		

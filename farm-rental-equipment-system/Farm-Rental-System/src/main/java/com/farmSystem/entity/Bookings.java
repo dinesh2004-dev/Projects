@@ -63,7 +63,6 @@ public class Bookings extends Base {
 	@Column(nullable = false)
 	private PaymentStatus paymentStatus;
 	
-	
 	@Column(nullable = false)
 	private double totalCost;
 	
