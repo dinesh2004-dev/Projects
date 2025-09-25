@@ -20,7 +20,8 @@ public class EquipmentDTO extends Base {
 	private String name;
 
 	private int id;
-	private User owner;
+	private int ownerId;
+	private String ownerName;
 
 	private Category category;
 

@@ -6,6 +6,8 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -64,11 +66,12 @@ public class UserServiceImpl implements UserService{
 		
 		userRepository.save(user);
 		
-		emailService.sendWelcomeMessage(user.getEmailId());
+//		emailService.sendWelcomeMessage(user.getEmailId());
 		
 		return user.getId();
 	}
 
+	@Cacheable(value = "users", key = "#id")
 	@Override
 	public UserDTO findById(int id) throws UserNotFoundException {
 		
@@ -81,6 +84,7 @@ public class UserServiceImpl implements UserService{
 	}
 
 	@Override
+	@Cacheable(value = "Finduser", key = "#emailId")
 	public User findUser(String emailId, String password) throws UserNotFoundException  {
 		User user = userRepository.findUser(emailId, password);
 
@@ -105,11 +109,13 @@ public class UserServiceImpl implements UserService{
 	}
 	
 	@Override
+	@CacheEvict(value = "Finduser", key = "#emailId")
 	public void deleteById(int id) {
 		
 		userRepository.deleteById(id);
 	}
 	@Override
+	@Cacheable(value = "getUsers")
 	public List<UserDTO> findAllUsers(){
 		
 		List<User> userList = userRepository.findAll();

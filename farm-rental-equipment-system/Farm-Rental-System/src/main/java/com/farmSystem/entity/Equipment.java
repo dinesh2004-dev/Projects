@@ -62,7 +62,7 @@ public class Equipment extends Base {
 
 	private Availability availability;
 	
-	@Getter(AccessLevel.NONE)
+	@Getter
 	@Setter(AccessLevel.NONE)
 	@Column(insertable = false, updatable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
 	private LocalDateTime createDate;

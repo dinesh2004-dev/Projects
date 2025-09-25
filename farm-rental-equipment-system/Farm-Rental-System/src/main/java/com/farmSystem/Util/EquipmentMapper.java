@@ -10,9 +10,11 @@ import com.farmSystem.entity.Equipment;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = UserMapper.class)
 public interface EquipmentMapper {
 
-	@Mapping(target = "owner", ignore = true)
+    @Mapping(source = "owner.id", target = "ownerId")
+    @Mapping(source = "owner.fullName", target = "ownerName")
+    @Mapping(source = "createDate", target = "createDate")
     EquipmentDTO equipmentEntityToEquipmentDTO(Equipment equipment);
 
-    @Mapping(source = "owner", target = "owner")
+//    @Mapping(source = "owner", target = "owner")
     Equipment equipmentDTOToEquipmentEntity(EquipmentDTO equipmentDTO);
 }

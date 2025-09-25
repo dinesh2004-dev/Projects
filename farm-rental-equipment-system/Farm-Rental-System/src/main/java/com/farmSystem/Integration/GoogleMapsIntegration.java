@@ -26,25 +26,32 @@ public class GoogleMapsIntegration {
     }
 	
 	public Coordinates getCoordinatesFromAddress(String address) {
+
 		String url = String.format(
-	            "https://maps.googleapis.com/maps/api/geocode/json?address=%s&key=%s",
-	            address.replace(" ", "+"), API_KEY);
+	            "https://us1.locationiq.com/v1/search?key=%s&q=%s&format=json",
+                API_KEY,address.replace(" ", "+"));
 		
 		RestTemplate restTemplate = new RestTemplate();
 		
 		String response = restTemplate.getForObject(url,String.class);
+
+        System.out.println("Google Maps API response: " + response);
+
+//        JSONObject jsonObject = new JSONObject(response);
+
+
+
 		
-		JSONObject jsonObject = new JSONObject(response);
-		
-		JSONArray result = jsonObject.getJSONArray("results");
+		JSONArray result = new JSONArray(response);
+
 		
 		if (result.length() > 0) {
-            JSONObject location = result.getJSONObject(0)
-                                       .getJSONObject("geometry")
-                                       .getJSONObject("location");
-            double latitude = location.getDouble("lat");
-            double longitude = location.getDouble("lng");
-            return new Coordinates(latitude, longitude, address);
+            JSONObject location = result.getJSONObject(0);
+            double lat = Double.parseDouble(location.getString("lat"));
+            double lon = Double.parseDouble(location.getString("lon"));
+            String displayName = location.getString("display_name");
+            return new Coordinates(lat, lon, displayName);
+
         } else {
             throw new IllegalArgumentException("No results found for the given address: " + address);
         }
